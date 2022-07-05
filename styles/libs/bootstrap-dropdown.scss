@@ -1,0 +1,59 @@
+.dropdown, .dropup {
+	// .dropdown-toggle {
+	// 	i.ic {
+	// 		transition: transform .2s !important;
+	// 	}
+	// 	&[aria-expanded=true] {
+	// 		i.ic {
+	// 			transform: rotate(-90deg) !important;
+	// 		}
+	// 	}
+	// }
+
+	.dropdown__effect {
+		opacity: 0;
+		transform: translateY(.5rem);
+		transition: all .25s;
+		position: absolute;
+		margin-top: 0;
+		z-index: 100;
+	}
+
+	&.show .dropdown__effect {
+		transform: none;
+		opacity: 1;
+	}
+
+	.dropdown-toggle {
+		cursor: pointer;
+	}
+}
+
+.dropdown-menu {
+	background: #fff;
+	display: grid;
+	overflow: hidden;
+	min-width: 200px;
+	margin-top: 1rem !important;
+	@apply shadow-md rounded-lg py-2;
+
+	.dropdown-item {
+		white-space: nowrap;
+		@apply py-2 px-3 transition duration-300 text-base font-normal;
+
+		span {
+			display: flex;
+			align-items: center;
+		}
+
+		&:hover {
+			@apply bg-gray-100;
+		}
+	}
+
+	.dropdown-divider {
+		display: block;
+		height: 1px;
+		@apply my-2 bg-gray-200;
+	}
+}

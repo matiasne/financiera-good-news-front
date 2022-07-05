@@ -1,0 +1,297 @@
+@import 'root/_variables';
+@import 'root/mixins.scss';
+
+/*=================================================================================================
+GENERAL LAYOUT
+=================================================================================================*/
+
+main {
+	--h-header: 65px;
+	--w-nav: 200px;
+	--w-nav-collapsed: 60px;
+
+	height: 100vh;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	grid-template-rows: var(--h-header) 1fr;
+	grid-template-areas: 'logo header' 'nav content';
+
+	#logo {
+		grid-area: logo;
+	}
+	header {
+		grid-area: header;
+	}
+	nav {
+		grid-area: nav;
+	}
+	section {
+		grid-area: content;
+		overflow: hidden;
+		position: relative;
+	}
+}
+
+/*=================================================================================================
+LOGO
+=================================================================================================*/
+
+#logo {
+	text-align: center;
+	padding: 0.5rem 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	@apply bg-gray-700 transition-all duration-300;
+}
+
+/*=================================================================================================
+SIDE NAV
+=================================================================================================*/
+
+nav {
+	z-index: 99;
+	width: var(--w-nav);
+	@apply bg-gray-800 py-3 flex flex-col justify-between gap-3 transition-all duration-300;
+
+	i.ic {
+		@apply transition-all;
+		font-size: 1.6rem;
+	}
+
+	ul {
+		padding: 0;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		@apply pr-3 gap-2;
+
+		li {
+			width: 100%;
+			display: block;
+
+			a {
+				display: block;
+				color: #fff;
+				position: relative;
+				z-index: 1;
+				@apply p-3 text-button;
+
+				i.ic {
+					opacity: 0.5;
+				}
+
+				&:before {
+					content: '';
+					display: block;
+					position: absolute;
+					width: 100%;
+					height: 100%;
+					z-index: -1;
+					@apply bg-main rounded-r-full top-0 left-0 transition-all duration-300;
+				}
+
+				span {
+					display: inline-block;
+					position: absolute;
+					top: 50%;
+					transform: translateY(-50%);
+					color: #fff;
+					opacity: 0.5;
+					@apply transition-all duration-300 ml-3 text-base;
+				}
+
+				&:hover span {
+					opacity: 1;
+				}
+
+				&.--active {
+					span {
+						font-weight: bold;
+					}
+					span,
+					i.ic {
+						opacity: 1;
+					}
+				}
+				&:not(.--active):before {
+					opacity: 0;
+					width: 0;
+				}
+			}
+		}
+	}
+
+	&.--collapsed {
+		width: var(--w-nav-collapsed);
+
+		ul {
+			padding: 0;
+
+			li a {
+				&.--active:before {
+					width: calc(100% + .5rem);
+				}
+				span {
+					opacity: 0;
+					margin-left: 3rem;
+					transform: translateY(-50%) translateX(-1rem);
+					@apply px-3 py-2 rounded-lg pointer-events-none;
+				}
+				&:hover {
+					span {
+						opacity: 1;
+						font-weight: normal;
+						transform: translateY(-50%);
+						@apply bg-gray-800;
+					}
+				}
+			}
+		}
+	}
+}
+
+/*=================================================================================================
+HEADER
+=================================================================================================*/
+
+header {
+	@apply z-20 bg-white shadow py-2 flex items-center px-4 justify-between;
+
+	h1 {
+		@apply font-bold text-h4 text-gray-600;
+	}
+}
+
+/*=================================================================================================
+MAIN CONTENT
+=================================================================================================*/
+
+section {
+	// @apply py-2 px-5;
+	position: relative;
+}
+
+#content-main {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	position: absolute;
+}
+
+.contentScrollable {
+	@include withScroll();
+	overflow: auto;
+	height: 100%;
+}
+
+.contentSet {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+
+	.contentSet__shrink {
+		@apply px-4 py-3;
+
+		& + .contentSet__shrink, & + .contentSet__scrollable {
+			@apply pt-0;
+		}
+	}
+
+	.contentSet__scrollable {
+		overflow: auto;
+		-webkit-mask-image: linear-gradient(transparent, black 1rem, black calc(100% - 1rem), transparent);
+		@apply flex-1 py-3;
+		@include withScroll();
+	}
+}
+
+/*=================================================================================================
+TRANSITIONS BETWEEN STATES
+=================================================================================================*/
+$moveAmount: 10vw;
+$moveUpAmount: 1vw;
+
+.slide-enter {
+	opacity: 0;
+	transform: translateX($moveAmount);
+}
+.slide-enter-active {
+	opacity: 1;
+	transform: translateX(0);
+}
+.slide-exit {
+	opacity: 1;
+	transform: translateX(0);
+}
+.slide-exit-active {
+	opacity: 0;
+	transform: translateX($moveAmount * -1);
+}
+.slide-enter-active,
+.slide-exit-active {
+	transition: opacity 500ms, transform 500ms;
+}
+
+
+.slideUp-enter {
+	opacity: 0;
+	transform: translateY($moveUpAmount);
+}
+.slideUp-enter-active {
+	opacity: 1;
+	transform: translateY(0);
+}
+.slideUp-exit {
+	opacity: 1;
+	transform: translateY(0);
+}
+.slideUp-exit-active {
+	opacity: 0;
+	transform: translateY($moveUpAmount);
+}
+.slideUp-enter-active,
+.slideUp-exit-active {
+	transition: opacity 300ms, transform 300ms;
+}
+
+.fade-enter {
+	opacity: 0;
+}
+.fade-exit {
+	opacity: 1;
+}
+.fade-enter-active {
+	opacity: 1;
+}
+.fade-exit-active {
+	opacity: 0;
+}
+.fade-enter-active,
+.fade-exit-active {
+	transition: opacity 300ms;
+}
+
+.fadeToTop-enter {
+	opacity: 0;
+	transform: translateY(1rem);
+}
+.fadeToTop-enter-active {
+	opacity: 1;
+	transform: translateY(0);
+}
+.fadeToTop-exit {
+	opacity: 1;
+	transform: translateY(0);
+}
+.fadeToTop-exit-active {
+	opacity: 0;
+	transform: translateY(1rem);
+}
+.fadeToTop-enter-active,
+.fadeToTop-exit-active {
+	transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}

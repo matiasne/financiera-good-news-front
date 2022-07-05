@@ -1,0 +1,88 @@
+@import '../root/_variables';
+@import '../root/mixins.scss';
+
+/* CUSTOM SELECT2 */
+
+.select2.disabled {
+	opacity: .5;
+	pointer-events: none !important;
+}
+
+.select2__value-container {
+	height: 100% !important;
+}
+
+.css-b8ldur-Input {
+	height: 36px !important;
+	top: 0 !important;
+	position: absolute !important;
+}
+
+input#react-select-2-input {
+	transition: none !important;
+	border: none !important;
+	box-shadow: none !important;
+}
+
+.select2__indicators {
+    position: absolute !important;
+    right: 0 !important;
+    top: 0 !important;
+}
+
+span.select2__indicator-separator { display: none !important; }
+
+.select2__single-value {
+	margin: 0 !important;
+	@apply px-2 text-base text-gray-500;
+}
+
+.select2__indicator.select2__dropdown-indicator {
+	transition: all .2s ease-in-out;
+	padding: 12px 8px;
+}
+
+.select2 {
+	.select2__control {
+		transition: all var(--trans-fast);
+		width: 100%;
+		height: $input-height;
+		transition: all 0.25s ease-in-out;
+		outline: none !important;
+		position: relative;
+		border-radius: $input-radius;
+		@apply px-2 py-1 bg-white border border-gray-300 text-gray-600;
+	}
+
+	.select2__input {
+		position: absolute;
+		top: .7rem;
+		left: 0;
+	}
+
+	.select2__placeholder {
+		top: 50%;
+		left: 0;
+		transform: translateY(-50%);
+		@apply px-2;
+	}
+
+	.select2__menu {
+		border-radius: $input-radius;
+	}
+
+	.select2__menu .select2__menu-list {
+		@include withScroll;
+	}
+}
+
+
+.select2__control--menu-is-open .select2__indicator.select2__dropdown-indicator {
+	transform: rotateZ(180deg) !important;
+}
+
+.select2__input input {
+	border: none !important;
+	box-shadow: none !important;
+	transition: all 0s !important;
+}

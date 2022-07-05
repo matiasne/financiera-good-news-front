@@ -1,0 +1,28 @@
+//== Media queries breakpoints
+$screen-xs:                  480px !default;
+$screen-sm:                  640px !default;
+$screen-md:                  768px !default;
+$screen-lg:                  1024px !default;
+$screen-xl:                  1200px !default;
+
+
+//== Grid system
+$grid-gutter-width:         2rem;
+$grid-columns:              12 !default;
+$container-width:           1300px !default;
+$container-md-width:        1000px;
+$container-sm-width:        640px;
+$container-xs-width:        420px;
+$container-fluid-width:     calc(100% - $grid-gutter-width);
+
+
+$font-text:                'Open Sans';
+$font-title:               'Poppins';
+$font-subtitle:            'Inconsolata';
+
+
+// INPUTS
+
+$input-height: 				3rem;
+$input-radius: 				.6rem;
+$input-focus-color:			#9d61ff;

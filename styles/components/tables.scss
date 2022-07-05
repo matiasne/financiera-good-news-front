@@ -1,0 +1,166 @@
+/*=================================================================================================
+TABLES
+=================================================================================================*/
+
+.tableContainer {
+	background: #fff;
+	padding: 21px 0;
+	border-radius: 0 0 9px 9px;
+	box-shadow: 0 7px 15px rgba(0, 0, 0, 0.1);
+
+	table.table {
+		td:first-child,
+		th:first-child {
+			@apply pl-5;
+		}
+		td:last-child,
+		th:last-child {
+			@apply pr-5;
+		}
+	}
+}
+
+table.table {
+	width: 100%;
+	border-collapse: collapse;
+
+	thead {
+		@apply border-b-2 border-main border-opacity-50;
+
+		th {
+			@apply text-main text-opacity-75;
+		}
+	}
+
+	&.striped tr {
+		// &.odd {
+		// 	@apply bg-white bg-opacity-20;
+		// }
+		&.even {
+			@apply bg-gray-900 bg-opacity-5;
+		}
+	}
+	&.lined tr {
+		td {
+			@apply border-b border-black border-opacity-10;
+		}
+		.collapsibleData__content-inner {
+			@apply border-b border-black border-opacity-10 mb-3;
+		}
+	}
+	&.bordered {
+		border-collapse: collapse;
+		@apply rounded-t-lg;
+
+		th {
+			@apply bg-gray-50 normal-case;
+		}
+		thead,
+		td {
+			@apply border;
+		}
+		thead tr:not(:last-child) {
+			@apply border-b;
+		}
+	}
+	&.--selectable tr {
+		@apply transition-colors;
+		&.--selected {
+			@apply bg-main bg-opacity-10;
+		}
+	}
+	&.--clickable tbody tr {
+		@apply transition-colors cursor-pointer;
+		&:hover {
+			@apply bg-main bg-opacity-10;
+		}
+	}
+
+	td,
+	th {
+		padding: 0.25rem;
+		text-align: left;
+		@apply p-2 text-base text-gray-600;
+	}
+
+	th {
+		text-transform: uppercase;
+		font-weight: bold;
+
+		.th__content {
+			display: flex;
+			align-items: center;
+			@apply gap-1;
+		}
+	}
+
+	td {
+		font-size: 1rem;
+		line-height: 24px;
+		position: relative;
+
+		span {
+			@apply flex items-center;
+		}
+
+		.td__label {
+			display: inline-block !important;
+			@apply text-base;
+		}
+	}
+
+	tr {
+		&.urgente,
+		&.warning {
+			position: relative;
+
+			td:first-child {
+				.td__label {
+					@apply text-yellow-400;
+				}
+
+				&:after {
+					content: 'URG';
+					display: block;
+					position: absolute;
+					pointer-events: none;
+					background: none;
+					top: 50%;
+					left: 0;
+					transform: translate(-50%, -50%);
+					padding: 0.2rem 0.3rem;
+					@apply bg-yellow-400 text-sm text-white font-normal rounded-md;
+				}
+			}
+		}
+		&.warning {
+			td:first-child {
+				@apply pl-4;
+				.td__label {
+					@apply text-red-500;
+				}
+
+				&:after {
+					content: '!';
+					@apply bg-red-500 text-white font-bold w-4 h-4 rounded-full text-center;
+				}
+			}
+		}
+	}
+}
+
+/*=================================================================================================
+TABLE COLLAPSIBLE
+=================================================================================================*/
+
+.collapsibleData__tr {
+	border: none !important;
+}
+
+.collapsibleData__td {
+	padding: 0 !important;
+
+	.collapsibleData__content-inner {
+		@apply bg-gray-100 p-3 px-4;
+	}
+}

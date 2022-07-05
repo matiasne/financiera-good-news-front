@@ -1,0 +1,365 @@
+/*==================================================================================
+BUTTONS
+==================================================================================*/
+
+.btn,
+.btn-group {
+	--ripple-light: rgba(255, 255, 255, 0.6);
+	--ripple-dark: rgba(0, 0, 0, 0.4);
+	--ripple-bg: var(--ripple-light);
+	color: #fff;
+	border: none;
+	padding: 0.8rem 1.2rem;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	position: relative;
+
+	@apply text-white text-button rounded-lg transition-all duration-300 gap-2;
+	@apply bg-main hover:bg-main-600 font-bold shadow shadow-main;
+
+	&.--selected {
+		@apply bg-main-600;
+	}
+
+	&.--label {
+		cursor: auto;
+		pointer-events: none;
+	}
+
+	i.ic {
+		color: inherit;
+		pointer-events: none;
+		margin: -5px 0;
+		transition: all 0.2s ease-in-out !important;
+		@apply text-icon-sm;
+	}
+
+	.btn__effect-container {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+		pointer-events: none;
+		@apply rounded-lg;
+	}
+
+	.btn__ripple {
+		position: absolute;
+		border-radius: 50%;
+		background: var(--ripple-bg);
+		opacity: 0;
+		width: min(150px, 200%);
+		aspect-ratio: 1 / 1;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%) scale(0);
+
+		&.--active {
+			animation: ripple 0.5s ease-out;
+		}
+	}
+}
+
+table .btn,
+table .btn-gorup {
+	display: flex;
+}
+
+@keyframes ripple {
+	0% {
+		opacity: 1;
+		transform: translate(-50%, -50%) scale(0);
+	}
+	100% {
+		transform: translate(-50%, -50%) scale(1);
+		opacity: 0;
+	}
+}
+
+.btn,
+.btn-group {
+	/*=================================================================================================
+	SIZE VARIANTS
+	=================================================================================================*/
+	&.btn-md {
+		// padding: 0.75rem 1rem;
+	}
+
+	&.btn-sm {
+		padding: 0.5rem 0.7rem;
+		font-size: 0.9rem;
+	}
+
+	&.btn-lg {
+		padding: 1.2rem 2rem;
+		font-size: 1rem;
+		height: auto;
+
+		@apply rounded-xl;
+
+		.btn__effect-container {
+			@apply rounded-xl;
+		}
+	}
+
+	&.btn-xl {
+		padding: 1.5rem 3rem;
+		height: auto;
+
+		@apply rounded-xl;
+
+		.btn__effect-container {
+			@apply rounded-xl;
+		}
+	}
+
+	/*=================================================================================================
+	COLOR VARIANTS
+	=================================================================================================*/
+	&.btn-main {
+		@apply shadow-main;
+	}
+
+	&.btn-info {
+		@apply bg-blue hover:bg-blue-600 shadow-blue;
+		&.--selected {
+			@apply bg-blue-600;
+		}
+	}
+
+	&.btn-success {
+		@apply bg-green hover:bg-green-600 shadow-green;
+		&.--selected {
+			@apply bg-green-600;
+		}
+	}
+
+	&.btn-warning {
+		@apply bg-yellow hover:bg-yellow-600 shadow-yellow;
+		&.--selected {
+			@apply bg-yellow-600;
+		}
+	}
+
+	&.btn-error {
+		@apply bg-red hover:bg-red-600 shadow-red;
+		&.--selected {
+			@apply bg-red-600;
+		}
+	}
+
+	&.btn-dark {
+		@apply bg-gray-700 hover:bg-gray-900 shadow-black;
+		&.--selected {
+			@apply bg-gray-900;
+		}
+	}
+
+	&.btn-light {
+		@apply bg-white shadow-dark;
+		@apply text-gray-500 hover:bg-gray-100;
+		&.--selected {
+			@apply bg-gray-100;
+		}
+		.btn__ripple {
+			background: var(--ripple-dark);
+		}
+	}
+
+	&.btn-neutral {
+		@apply bg-gray-200 hover:bg-gray-300 text-gray-500 shadow-black;
+		&.--selected {
+			@apply bg-gray-300;
+		}
+	}
+
+	&.btn-neutraldark {
+		@apply bg-gray-400 hover:bg-gray-500 text-white shadow-black;
+		&.--selected {
+			@apply bg-gray-500;
+		}
+	}
+
+	&.btn-outline,
+	&.btn-link {
+		@apply bg-transparent shadow-border;
+
+		&.--filled {
+			@apply bg-white;
+		}
+
+		&.btn-main {
+			@apply text-main hover:bg-main hover:bg-opacity-10;
+			.btn__ripple {
+				@apply bg-main bg-opacity-40;
+			}
+		}
+
+		&.btn-info {
+			@apply text-blue hover:bg-blue hover:bg-opacity-10;
+			.btn__ripple {
+				@apply bg-blue bg-opacity-40;
+			}
+		}
+
+		&.btn-success {
+			@apply text-green-500 hover:bg-green hover:bg-opacity-10;
+			.btn__ripple {
+				@apply bg-green bg-opacity-40;
+			}
+		}
+
+		&.btn-warning {
+			@apply text-yellow hover:bg-yellow hover:bg-opacity-10;
+			.btn__ripple {
+				@apply bg-yellow bg-opacity-40;
+			}
+		}
+
+		&.btn-error {
+			@apply text-red hover:bg-red hover:bg-opacity-10;
+			.btn__ripple {
+				@apply bg-red bg-opacity-40;
+			}
+		}
+
+		&.btn-light {
+			@apply hover:bg-white hover:bg-opacity-40 shadow-dark;
+		}
+
+		&.btn-dark {
+			@apply text-gray-700 hover:bg-gray-700 hover:bg-opacity-10 shadow-black;
+		}
+
+		&.btn-neutral {
+			@apply text-gray-700 hover:bg-gray-400 hover:bg-opacity-25 shadow-black;
+		}
+
+		&.btn-neutraldark {
+			@apply text-gray-700 hover:bg-gray-400 hover:bg-opacity-25 shadow-black;
+		}
+	}
+
+	&.btn-link {
+		@apply shadow-none border-none;
+	}
+
+	&.--plain {
+		@apply shadow-none;
+	}
+
+	/*=================================================================================================
+	TYPE VARIANT
+	=================================================================================================*/
+
+	&.btn-rounded {
+		font-size: 1.1rem;
+		padding: 0 !important;
+		aspect-ratio: 1 / 1;
+		@apply rounded-full w-7 h-7;
+
+		.btn__effect-container {
+			@apply rounded-full;
+		}
+
+		&.btn-sm {
+			@apply w-5 h-5;
+			i.ic {
+				font-size: 1.1rem;
+			}
+		}
+
+		&.btn-lg {
+			@apply w-9 h-9;
+			i.ic {
+				font-size: 2rem;
+			}
+		}
+	}
+
+	/*=================================================================================================
+	DISABLED
+	=================================================================================================*/
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+}
+
+/*=================================================================================================
+BUTTON GROUP
+=================================================================================================*/
+
+.btn-group {
+	position: relative;
+	cursor: auto;
+	display: grid;
+	grid-auto-flow: column;
+	grid-auto-columns: auto;
+	grid-template-rows: 1fr;
+	@apply p-0 gap-0;
+
+	.btn {
+		@apply shadow-none;
+	}
+
+	&:not(.--vertical) {
+		.btn {
+			&:not(:first-child),
+			&:not(:first-child) .btn__effect-container {
+				@apply rounded-l-none;
+			}
+			&:not(:last-child),
+			&:not(:last-child) .btn__effect-container {
+				@apply rounded-r-none;
+			}
+		}
+	}
+
+	.btn-group-divider {
+		height: 1.5em;
+		width: 1px;
+		background: rgba(#fff, 0.4);
+		margin: 0 -0.5px;
+		z-index: 2;
+	}
+
+	&.btn-light,
+	&.btn-outline,
+	&.btn-link {
+		.btn-group-divider {
+			background: rgba(#000, 0.2);
+		}
+	}
+
+	/*=================================================================================================
+	VERICAL
+	=================================================================================================*/
+	&.--vertical {
+		@apply flex-col;
+
+		.btn {
+			&:not(:first-child),
+			&:not(:first-child) .btn__effect-container {
+				@apply rounded-t-none;
+			}
+			&:not(:last-child),
+			&:not(:last-child) .btn__effect-container {
+				@apply rounded-b-none;
+			}
+		}
+
+		.btn-group-divider {
+			width: 1.5em;
+			height: 1px;
+			margin: -0.5px 0;
+		}
+
+		&.w-full .btn-group-divider {
+			width: calc(100% - 3em);
+		}
+	}
+}

@@ -1,0 +1,211 @@
+@use 'sass:color';
+@use 'sass:math';
+
+@import '_variables';
+
+@mixin withScroll() {
+	overflow: auto;
+
+	/* Handle */
+	&::-webkit-scrollbar-thumb {
+		@apply bg-black bg-opacity-10;
+		border: 9px solid rgba(0, 0, 0, 0);
+		background-clip: padding-box;
+		border-radius: 24px;
+	}
+
+	/* Handle on hover */
+	&::-webkit-scrollbar-thumb:hover {
+		@apply bg-gray-400;
+	}
+
+	&::-webkit-scrollbar {
+		width: 24px;
+		height: 24px;
+	}
+
+	&::-webkit-scrollbar-corner {
+		background-color: transparent;
+	}
+
+	&::-webkit-scrollbar:horizontal {
+		height: 24px;
+		// width: 14px;
+	}
+}
+
+@mixin clearfix() {
+	&::after {
+		display: block;
+		content: '';
+		clear: both;
+	}
+}
+
+@mixin adaptableContainer($cw) {
+	$gutter: 1.5rem;
+	$gutter-sm: 0.5rem;
+	padding-left: $gutter-sm;
+	padding-right: $gutter-sm;
+	max-width: 100%;
+	width: 100%;
+	margin: 0 auto;
+	position: relative;
+
+	@media (min-width: $screen-sm) {
+		padding-left: $gutter;
+		padding-right: $gutter;
+	}
+
+	@media (min-width: $cw) {
+		max-width: $cw;
+	}
+}
+
+@mixin colSystem() {
+	$cols: 20;
+
+	// COL SIZES
+	@for $y from 2 to $cols {
+		.row-#{$y} {
+			@for $i from 1 to $y + 1 {
+				// xs sm md lg xl
+				$newI: $y + 1 - $i;
+				$basis: math.div(100, $y) * $newI;
+				$res: $basis + '%';
+
+				& > .col {
+					&.col-#{$newI} {
+						width: #{$res};
+					}
+
+					@media (min-width: $screen-xs) {
+						&.xs\:col-#{$newI} {
+							width: #{$res} !important;
+						}
+					}
+
+					@media (min-width: $screen-sm) {
+						&.sm\:col-#{$newI} {
+							width: #{$res} !important;
+						}
+					}
+
+					@media (min-width: $screen-md) {
+						&.md\:col-#{$newI} {
+							width: #{$res} !important;
+						}
+					}
+
+					@media (min-width: $screen-lg) {
+						&.lg\:col-#{$newI} {
+							width: #{$res} !important;
+						}
+					}
+
+					@media (min-width: $screen-xl) {
+						&.xl\:col-#{$newI} {
+							width: #{$res} !important;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// GAPS
+	@for $g from 1 to $cols {
+		.row-gap-#{$g} {
+			@include oneColGaps($g);
+		}
+
+		@media (min-width: $screen-xl) {
+			.xl\:row-gap-#{$g} {
+				@include oneColGaps($g);
+			}
+		}
+
+		@media (min-width: $screen-lg) {
+			.lg\:row-gap-#{$g} {
+				@include oneColGaps($g);
+			}
+		}
+
+		@media (min-width: $screen-md) {
+			.md\:row-gap-#{$g} {
+				@include oneColGaps($g);
+			}
+		}
+
+		@media (min-width: $screen-sm) {
+			.sm\:row-gap-#{$g} {
+				@include oneColGaps($g);
+			}
+		}
+
+		@media (min-width: $screen-xs) {
+			.xs\:row-gap-#{$g} {
+				@include oneColGaps($g);
+			}
+		}
+	}
+
+	.rows {
+		.row:not(:last-child) {
+			margin-bottom: 0;
+		}
+		.row + .row {
+			margin-top: 0;
+		}
+	}
+}
+
+@mixin oneColGaps($gap) {
+	$num: math.div($gap, 8);
+	$antiNum: $num * -1;
+
+	margin-left: #{$antiNum} + 'rem';
+	margin-right: #{$antiNum} + 'rem';
+
+	& > .col {
+		padding-left: #{$num} + 'rem';
+		padding-right: #{$num} + 'rem';
+	}
+
+	&.row-gap-vertical {
+		margin-top: #{$antiNum} + 'rem';
+		margin-bottom: #{$antiNum} + 'rem';
+
+		& > .col {
+			padding-top: #{$num} + 'rem';
+			padding-bottom: #{$num} + 'rem';
+		}
+	}
+}
+
+@mixin createDarkColor($darkColor, $name: null) {
+	$step: 1;
+	$alphaStep: 1;
+	$saturationStep: 1;
+	$darkStep: 1;
+
+	@for $i from 1 to 10 {
+		$step: $i * 100;
+		$alphaStep: math.div(10 - math.div($i, 2), 10) * -1;
+		$saturationStep: $i * 3%;
+		$darkStep: $i * -9%;
+
+		// @debug $alphaStep;
+
+		$result: color.adjust(
+			$color: $darkColor,
+			$lightness: $darkStep,
+			$saturation: $saturationStep,
+			$alpha: $alphaStep,
+		);
+
+		:root {
+			--color-dark-#{$step}: #{$result};
+		}
+	}
+}

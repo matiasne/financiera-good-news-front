@@ -1,0 +1,45 @@
+{
+  "name": "gold-next-template",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@date-io/moment": "^2.11.0",
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@material-ui/core": "^5.0.0-beta.4",
+    "@mui/lab": "^5.0.0-alpha.60",
+    "@mui/material": "^5.2.4",
+    "@react-pdf/renderer": "^2.0.21",
+    "@svgr/webpack": "^5.5.0",
+    "axios": "^0.23.0",
+    "classnames": "^2.2.6",
+    "cleave.js": "^1.6.0",
+    "cookies-next": "^2.0.4",
+    "file-saver": "^2.0.5",
+    "formik": "^2.2.9",
+    "jszip": "^3.10.0",
+    "moment": "^2.29.1",
+    "next": "^11.1.2",
+    "next-auth": "^3.29.0",
+    "next-images": "^1.7.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-dropzone": "^12.0.4",
+    "react-gold-modal": "^1.0.3",
+    "react-hot-toast": "^2.1.1",
+    "react-pill-switcher": "^1.0.5",
+    "react-query": "^3.27.0",
+    "react-scroll": "^1.8.3",
+    "sass": "^1.35.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.2.5",
+    "postcss": "^8.2.13",
+    "tailwindcss": "^2.1.2"
+  }
+}
