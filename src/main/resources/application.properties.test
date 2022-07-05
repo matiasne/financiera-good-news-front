@@ -1,0 +1,21 @@
+## Test
+
+## Spring DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
+spring.datasource.url=jdbc:postgresql://ec2-23-22-156-110.compute-1.amazonaws.com:5432/deqhd63pjbklfn
+spring.datasource.username=etgemvkaavivfg
+spring.datasource.password=096334d4730fe596e4679d8e5871b1d41cfa685b57e8bdeb1ff3bcaecf0bdb49
+
+# The SQL dialect makes Hibernate generate better SQL for the chosen database
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.properties.hibernate.temp.use_jdbc_metadata_defaults=false
+
+# Hibernate ddl auto (create, create-drop, validate, update, none)
+spring.jpa.hibernate.ddl-auto=update
+spring.h2.console.enabled=true
+spring.jpa.open-in-view=true
+spring.data.jpa.repositories.bootstrap-mode=default
+spring.jpa.hibernate.show-sql=true
+# spring.datasource.schema=classpath:/schema.sql
+spring.jackson.serialization.fail-on-empty-beans=false
+
+logging.level.org.hibernate.SQL=debug

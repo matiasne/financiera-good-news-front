@@ -1,0 +1,29 @@
+# Prod
+
+## Spring DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
+spring.datasource.url=jdbc:mysql://45.79.14.99:3306/financiera
+spring.datasource.username=financiera
+spring.datasource.password=financiera
+spring.datasource.character-encoding=utf8
+spring.datasource.connectionProperties.useUnicode=true
+spring.datasource.connectionProperties.characterEncoding=utf-8
+
+## JPA
+## The SQL dialect makes Hibernate generate better SQL for the chosen database
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
+
+## Hibernate ddl auto (create, create-drop, validate, update)
+spring.jpa.hibernate.ddl-auto=update
+spring.h2.console.enabled=true
+spring.jpa.open-in-view=true
+spring.data.jpa.repositories.bootstrap-mode=default
+spring.jackson.serialization.fail-on-empty-beans=false
+logging.level.org.hibernate.SQL=debug
+
+## Mailing
+mailing.host=smtp.gmail.com
+mailing.port=587
+mailing.user=mgoldblat@gmail.com
+mailing.pass=iajklktntlaenmbx
+mailing.from=mgoldblat@gmail.com
+mailing.to=mgoldblat@gmail.com
