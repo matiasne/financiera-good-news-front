@@ -90,6 +90,9 @@ const MyPage = ({ session }) => {
 									</View>
 									<View style={styles.containerHead}>
 										<View style={styles.col}>
+											<Text style={styles.cardP}>{urlData.personType}:{urlData.personName}</Text>
+										</View>
+										<View style={styles.col}>
 											<Text style={styles.cardP}>Fecha: {fechaShow}</Text>
 										</View>
 										<View style={styles.col}>
@@ -134,9 +137,9 @@ const ItemsTable = ({ data }) => {
 
 		<View style={styles.tr} key={'totales0'}></View>
 		<View style={styles.tr} key={'totales1'}>
-			<Text style={styles.tdTotal}>Cupones Pendientes</Text>
-			<Text style={styles.thMONEY}>{parseMoney(cuponesPendientes)}</Text>
-		</View>
+			<Text style={styles.tdTotal}>Saldo Pendiente</Text>
+			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.pendingBalance)}</Text>
+		</View>		
 		<View style={styles.tr} key={'totales2'}>
 			<Text style={styles.tdTotal}>Total Cliente Cuenta Corriente en Pesos</Text>
 			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance)}</Text>
