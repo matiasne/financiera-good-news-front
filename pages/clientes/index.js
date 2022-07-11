@@ -101,6 +101,12 @@ const Page = ({ session }) => {
 											isSortable: false,
 										},
 										{
+											id: 'pendingBalance',
+											label: 'Saldo Pendiente',
+											type: 'money',
+											getContent: (e) => e.pendingBalance,
+										},
+										{
 											id: 'balance',
 											label: 'Saldo',
 											type: 'money',

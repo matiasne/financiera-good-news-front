@@ -39,6 +39,10 @@ function Page({ session }) {
 		},
 	})
 
+	const gananciaFinanciera = (item) =>{
+		return (item.customerFee - item.providerAccountFee) / 100 * item.total
+	}
+
 	const queryParams = {
 		singular: 'Depósito',
 		id: 'depositoSearch',
@@ -92,11 +96,11 @@ function Page({ session }) {
 				getContent: (e) => e.total,
 			},
 			{
-				id: 'total',
+				id: 'ganancia',
 				label: 'Ganancia Financiera',
 				type: 'money',
 				isSortable: false,
-				getContent: (e) => (e.customerFee - e.providerAccountFee) / 100 * e.total,
+				getContent: (e) => gananciaFinanciera(e),
 			},
 
 		],
@@ -257,11 +261,13 @@ function Page({ session }) {
 							// loadWhenUpdating
 							content={(data, queryData) => {
 								let items = data.data;
-								let total = 0;
-								items?.map((item, i) => total += item.total);
+								let totaGananciaF = 0;
+								items?.map((item, i) => {								
+									totaGananciaF += gananciaFinanciera(item)								
+								});
 								return <div>
 									<div class="dataSet my-0 float-right">
-										<h2>Total Ganancia: {parseMoney(total)}</h2>
+										<h2>Total Ganancia: {parseMoney(totaGananciaF)}</h2>
 									</div>
 									<Table striped={false} lined={true}
 										tableData={items}

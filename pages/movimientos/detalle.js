@@ -40,10 +40,45 @@ const MyPage = ({ session }) => {
 	const router = useRouter();
 	const [filters, setFilters] = useState({});
 	const [urlData, setUrlData] = useState({});
+	const [entity, setEntity] = useState({});
 
+	const mutationGetC = useMutation((personId) => {
+		return axios(getQueryFullData('clientGet', personId, session))
+	}, {
+		onSuccess: (data) => {
+			setEntity(data.data);
+		},
+		onError: (err) => {
+			console.log(err);
+		}
+	})
+
+	const mutationGetP = useMutation((personId) => {
+		return axios(getQueryFullData('providerGet', personId, session))
+	}, {
+		onSuccess: (data) => {
+			setEntity(data.data);
+		},
+		onError: (err) => {
+			console.log(err);
+		}
+	})
+
+
+	
 
 	useEffect(() => {
+		
 		if (router.isReady) {
+			
+			if (router.query?.personType === "Cliente")
+				mutationGetC.mutate(router.query?.personId);
+			
+	
+			if (router.query?.personType === "Proveedor")
+				mutationGetP.mutate(router.query?.personId);
+
+			console.log(entity)
 			setFilters({
 				personId: router.query?.personId,
 				from: router.query?.from,
@@ -100,7 +135,7 @@ const MyPage = ({ session }) => {
 										</View>
 									</View>
 
-									<ItemsTable data={data} />
+									<ItemsTable data={data} entity={entity}/>
 
 								</Page>
 							</Document>
@@ -123,7 +158,8 @@ export default MyPage
 
 
 
-const ItemsTable = ({ data }) => {
+const ItemsTable = ({ data, entity }) => {
+
 	let cuponesPendientes = 0;
 	data.data.map(item => {
 		if (item.transactionStatus === 'PENDIENTE_DE_ACREDITACION' || item.transactionStatus === 'CUIT_INCORRECTO') cuponesPendientes += item.total;
@@ -138,7 +174,7 @@ const ItemsTable = ({ data }) => {
 		<View style={styles.tr} key={'totales0'}></View>
 		<View style={styles.tr} key={'totales1'}>
 			<Text style={styles.tdTotal}>Saldo Pendiente</Text>
-			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.pendingBalance)}</Text>
+			<Text style={styles.thMONEY}>{parseMoney(entity.pendingBalance)}</Text>
 		</View>		
 		<View style={styles.tr} key={'totales2'}>
 			<Text style={styles.tdTotal}>Total Cliente Cuenta Corriente en Pesos</Text>
