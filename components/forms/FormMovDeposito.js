@@ -76,10 +76,11 @@ const Form = ({ session, formData, ...props }) => {
 				notes: '',
 				cuit: '',
 			});
+			setClient(null) //just to refresh last deposit list
 			setClient({ refresh: getTimestamp(), ...client })
-			setProviderAccount(null)
+			/*setProviderAccount(null)
 			setConfirming(false)
-			setErrors(null)
+			setErrors(null)*/
 			setForceRefresh(forceRefresh + 1);
 		},
 		onSettled: (data) => {
@@ -88,6 +89,7 @@ const Form = ({ session, formData, ...props }) => {
 	})
 
 	useEffect(() => {
+		
 		if (router.isReady && router.query.clienteId) {
 			mutationGet.mutate(router.query.clienteId);
 		}
@@ -101,7 +103,6 @@ const Form = ({ session, formData, ...props }) => {
 	function handleSubmit(e) {
 		e.preventDefault();
 		setConfirming(true);
-
 		if (form.file) {
 			var reader = new FileReader();
 			reader.readAsDataURL(form.file[0]);
@@ -350,7 +351,6 @@ function MyDropzone({ onChange = () => null, forceRefresh = 0 }) {
 			onChange(files);
 			setMyFiles(files);
 			setPreview(null);
-			// console.log(files);
 			var reader = new FileReader();
 			reader.readAsDataURL(files[0]);
 			reader.onload = () => {

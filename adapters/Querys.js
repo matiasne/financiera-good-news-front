@@ -234,6 +234,7 @@ export default function QueryContent({
 
 
 	useEffect(() => {
+		
 		let newQueryId = queryData ? [id, queryData] : id;
 		if (newQueryId !== queryId) {
 			setOptions(getQueryFullData(id, queryData, session));
@@ -251,6 +252,7 @@ export default function QueryContent({
 
 	// INITIAL LOADING
 	if (!session && !fetchBase.public) {
+		console.log('Cargando Sesion')
 		return loadingContent || renderLoading('Cargando Sesion')
 	} else {
 		const { isLoading,
@@ -262,6 +264,7 @@ export default function QueryContent({
 		} = useQuery(
 			queryId,
 			() => {
+				
 				return axios(options).then(res => {
 					onUpdated();
 					return res.data
