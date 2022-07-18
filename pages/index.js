@@ -179,12 +179,12 @@ function Page({ session }) {
 						</Col>
 					</Row>
 				</Rows>
-				{data.file && data.file.indexOf('data:') > -1 ?
+				{data.ticket.file && data.ticket.file.indexOf('data:') > -1 ?
 					<div className="mt-4">
-						{data.file.indexOf('data:image') > -1 ?
-							<div className="file-iframe"><img src={data.file} /></div>
+						{data.ticket.file.indexOf('data:image') > -1 ?
+							<div className="file-iframe"><img src={data.ticket.file} /></div>
 							:
-							<iframe src={data.file} className="file-iframe" />
+							<iframe src={data.ticket.file} className="file-iframe" />
 						}
 					</div>
 					:
