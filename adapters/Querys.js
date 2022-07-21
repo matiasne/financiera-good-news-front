@@ -239,6 +239,7 @@ export default function QueryContent({
 		if (newQueryId !== queryId) {
 			setOptions(getQueryFullData(id, queryData, session));
 			setQueryId(newQueryId);
+			setPage(1);
 		}
 	}, [queryData])
 
