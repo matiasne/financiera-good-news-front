@@ -1,5 +1,5 @@
 import { forceTime, parseDatetime, parseDtype, parseMoney, parseStatus } from '@/adapters/Parsers'
-import QueryContent, { getQueryFullData, QueryAutocomplete } from '@/adapters/Querys'
+import QueryContent, { getQueryFullData, QueryAutocomplete,QueryMultipleSelect } from '@/adapters/Querys'
 import Button, { IconButton } from '@/components/base/Buttons'
 import Col, { Container, Row, Rows } from '@/components/base/Grid'
 import Input from '@/components/base/Inputs'
@@ -364,6 +364,23 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 							!selection && router.push('?', { shallow: true });
 						}}
 					/>
+				</div>
+				<div className='w-full'>
+					<QueryMultipleSelect label="Cuenta" id="providerAccountsSearch" session={session}
+							queryData={{
+								sort: 'providerId',
+								order: 'asc',
+							}}
+							value={[]}
+							onSelect={(selection) => {
+								console.log(selection)
+								router.push('?cuentaProveedorId=' + selection);
+								/*setProviderAccount(selection);
+								selection && setClient(null) && setProvider(null);
+								selection && router.push('?cuentaProveedorId=' + selection);
+								!selection && router.push('?', { shallow: true });*/
+							}}
+						/>
 				</div>
 			</div>
 			<div>
