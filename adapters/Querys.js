@@ -530,23 +530,7 @@ export function QueryMultipleSelect({
 		if (queryData !== false) {
 			CallData();
 		}
-	}, [])
-
-	useEffect(() => {
-		setValue(props.value);
-	}, [props.value])
-
-	useEffect(() => {
-		if (wait) {
-			clearTimeout(wait);
-			wait = 0;
-		}
-		wait = setTimeout(() => {
-			if (queryData !== false) {
-				CallData();
-			}
-		}, 350)
-	}, [on, searchValue])
+	}, [])	
 
 	async function CallData() {
 		let newQueryData = queryData;
@@ -582,17 +566,7 @@ export function QueryMultipleSelect({
 				options={options}
 			/>
 		</div>
-	return <Input type="autocomplete" label={label} name={id} id={id} placeholder={placeholder} value={value || ''}
-		iconEnd="search"
-		options={options}
-		autocompleteProps={autocompleteProps}
-		disabled={props.disabled}
-		onChange={(selection) => {
-			setSearchValue(); // prevents research after select
-			setValue(selection);
-			onSelect(selection);
-		}}
-	/>
+	
 }
 
 // PRIVATE PARTS

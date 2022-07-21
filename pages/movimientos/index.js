@@ -202,7 +202,7 @@ export default Page
 function AdvancedFilters({ session, onFilter = () => null }) {
 	const [client, setClient] = useState(null);
 	const [provider, setProvider] = useState(null);
-	const [providerAccount, setProviderAccount] = useState(null);
+	const [providersAccounts, setProvidersAccounts] = useState(null);
 	const router = useRouter();
 	const [form, setForm] = useState({
 		from: null,
@@ -215,7 +215,7 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 			personId: provider?.id || client?.id,
 			personType: provider ? 'Proveedor' : 'Cliente',
 			personName: provider?.name || client?.name,
-			providerAccountId: providerAccount?.id,
+			providerAccountId: providersAccounts,
 			from: forceTime(form?.from, true),
 			to: forceTime(form?.to, false),
 		})
@@ -223,9 +223,9 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 			personId: provider?.id || client?.id,
 			from: forceTime(form?.from, true),
 			to: forceTime(form?.to, false),
-			providerAccountId: providerAccount?.id
+			providerAccountId: providersAccounts
 		})
-	}, [provider, client, providerAccount, form])
+	}, [provider, client, providersAccounts, form])
 
 	const mutationGetC = useMutation(formData => {
 		return axios(getQueryFullData('clientGet', formData, session))
@@ -253,7 +253,7 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 		return axios(getQueryFullData('providerAccountGet', formData, session))
 	}, {
 		onSuccess: (data) => {
-			setProviderAccount(data.data);
+		//	setProviderAccount(data.data);
 		},
 		onError: (err) => {
 			console.log(err);
@@ -276,7 +276,7 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 		if (router.query?.cuentaProveedorId > 0) {
 			mutationGetPA.mutate(router.query?.cuentaProveedorId);
 		} else {
-			providerAccount && setProviderAccount(null);
+			providersAccounts && setProvidersAccounts(null);
 		}
 
 	}, [router])
@@ -326,7 +326,7 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 						getOptionLabel={(option) => option.name}
 						onSelect={(selection) => {
 							setClient(selection);
-							selection && setProvider(null) && setProviderAccount(null);
+							selection && setProvider(null) && setProvidersAccounts(null);
 							selection && router.push('?clienteId=' + selection.id);
 							!selection && router.push('?', { shallow: true });
 						}}
@@ -342,29 +342,29 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 						getOptionLabel={(option) => option.name}
 						onSelect={(selection) => {
 							setProvider(selection);
-							selection && setClient(null) && setProviderAccount(null);
+							selection && setClient(null) && setSProviderAccountS(null);
 							selection && router.push('?proveedorId=' + selection.id);
 							!selection && router.push('?', { shallow: true });
 						}}
 					/>
 				</div>
-				<div className='w-full'>
+				{/*<div className='w-full'>
 					<QueryAutocomplete label="Cuenta" id="providerAccountsSearch" session={session}
 						queryData={{
 							sort: 'providerId',
 							order: 'asc',
 						}}
-						value={providerAccount}
+						value={providersAccounts}
 						getOptionLabel={(option) => option.name + ' - #' + option.accountNumber}
 						groupBy={(option) => option.providerName}
 						onSelect={(selection) => {
-							setProviderAccount(selection);
+							setProvidersAccounts(selection);
 							selection && setClient(null) && setProvider(null);
 							selection && router.push('?cuentaProveedorId=' + selection.id);
 							!selection && router.push('?', { shallow: true });
 						}}
 					/>
-				</div>
+					</div>*/}
 				<div className='w-full'>
 					<QueryMultipleSelect label="Cuenta" id="providerAccountsSearch" session={session}
 							queryData={{
@@ -374,11 +374,10 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 							value={[]}
 							onSelect={(selection) => {
 								console.log(selection)
-								router.push('?cuentaProveedorId=' + selection);
-								/*setProviderAccount(selection);
+								setProvidersAccounts(selection);								
 								selection && setClient(null) && setProvider(null);
 								selection && router.push('?cuentaProveedorId=' + selection);
-								!selection && router.push('?', { shallow: true });*/
+								!selection && router.push('?', { shallow: true });
 							}}
 						/>
 				</div>
