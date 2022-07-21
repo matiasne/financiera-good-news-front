@@ -480,6 +480,121 @@ export function QueryAutocomplete({
 	/>
 }
 
+export function QueryMultipleSelect({
+	id,
+	queryData,
+	queryParam = 'name',
+	on = null,
+	session,
+	onSelect = (e) => e,
+	placeholder = "Seleccione para buscar...",
+	label = "",	
+	optionLabel = "name",
+	optionValue = "id",
+	clearOnSelect = false,
+	...props
+}) {
+
+	const [options, setOptions] = useState([]); // AUTOCOMPLETE LIST OF SELECTABLE OPTIONS
+	const [queryOptions, setQueryOptions] = useState(getQueryFullData(id, queryData, session));
+	const [searchValue, setSearchValue] = useState('');
+	const [value, setValue] = useState(props.value || '');
+	const [queryId, setQueryId] = useState(id);
+
+	const mutation = useMutation(formData => {
+		return axios(formData);
+	}, {
+		mutationKey: queryId,
+		onSuccess: (data, variables, context) => {
+			if (data.config.method === 'get') {
+				console.log(data)
+				setOptions(data.data);
+			} else {
+				console.log(props)
+				let options = data.data.data.map(item => {
+				return 	{
+						label: item[optionLabel],
+						value: item[optionValue],
+					}
+				})
+				console.log(options)
+				setOptions(options);
+			}
+		},
+		onError: (err) => {
+			console.log(err);
+		}
+	})
+
+	useEffect(() => {
+		if (queryData !== false) {
+			CallData();
+		}
+	}, [])
+
+	useEffect(() => {
+		setValue(props.value);
+	}, [props.value])
+
+	useEffect(() => {
+		if (wait) {
+			clearTimeout(wait);
+			wait = 0;
+		}
+		wait = setTimeout(() => {
+			if (queryData !== false) {
+				CallData();
+			}
+		}, 350)
+	}, [on, searchValue])
+
+	async function CallData() {
+		let newQueryData = queryData;
+		if (typeof queryData === 'object' || !queryData) {
+			newQueryData = queryData || {};
+			newQueryData['page'] = 1;
+			newQueryData['size'] = 100;
+			newQueryData[queryParam] = searchValue;
+		}
+		setQueryId([id, newQueryData]);
+		let newFormData = getQueryFullData(id, newQueryData, session);
+		setQueryOptions(newFormData);
+
+		if (newQueryData) mutation.mutate(newFormData);
+	}
+
+	let multipleSelectteProps = { ...props };
+	multipleSelectteProps.loading = mutation.isLoading;
+	multipleSelectteProps.onInputChange = (e) => { e && setSearchValue(e.target.value); }
+	multipleSelectteProps.clearOnBlur = true;
+	multipleSelectteProps.blurOnSelect = true;
+	multipleSelectteProps.onBlur = () => setSearchValue();
+	// autocompleteProps.onOpen = (e) => { setSearchValue(''); }
+
+	return <div >
+			<Input type="multiselect" label={label} name={id} id={id} placeholder={placeholder} value={value} 
+					onChange={(e) => {
+						setSearchValue(); // prevents research after select
+						console.log(e)
+					 	setValue(e.value);
+						onSelect(e.value);
+					}}
+				options={options}
+			/>
+		</div>
+	return <Input type="autocomplete" label={label} name={id} id={id} placeholder={placeholder} value={value || ''}
+		iconEnd="search"
+		options={options}
+		autocompleteProps={autocompleteProps}
+		disabled={props.disabled}
+		onChange={(selection) => {
+			setSearchValue(); // prevents research after select
+			setValue(selection);
+			onSelect(selection);
+		}}
+	/>
+}
+
 // PRIVATE PARTS
 function renderError(msg) {
 	return <div className="w-full flex items-center gap-1 flex-col my-6">
