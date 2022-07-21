@@ -292,10 +292,16 @@ export default function QueryContent({
 
 			if (data.total === 0 && emptyContent) return emptyContent
 			return <div>
-				{content(data, queryData)}
-				{hasPagination && <div className="flex gap-2 mt-4">
+				{hasPagination && data.total && <div className="flex gap-2 mt-4">
 					<div className="w-full">
-						<p>Pág. {page} de {pages}</p>
+						<p>Pág. {page} de {pages} <br/> Total: {data.total}</p>
+					</div>
+				</div>}
+				{content(data, queryData)}
+				{hasPagination && data.total &&
+				<div className="flex gap-2 mt-4">
+					<div className="w-full">
+						<p>Pág. {page} de {pages} <br/> Total: {data.total}</p>
 					</div>
 					<Button variant="light" isElevated={false} onClick={() => setPage(page - 1)} disabled={page === 1 || data.total <= 0}>Anterior</Button>
 					<Button variant="light" isElevated={false} onClick={() => setPage(page + 1)} disabled={page === pages || data.total <= 0}>Siguiente</Button>
