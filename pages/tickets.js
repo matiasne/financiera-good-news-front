@@ -169,9 +169,11 @@ function Page({ session }) {
 										'goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'),
 										dataURLtoFile(item.file, 'goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'))
 									));
+
 									let downloadZip = () => zip.generateAsync({ type: "blob" }).then(function (content) {
 										saveAs(content, "goodnews-comprobantes.zip");
 									});
+									
 									return <div>
 										<div className="flex justify-end mb-2">
 											<Button iconStart={'file'} onClick={downloadZip}>Descargar Todo</Button>
