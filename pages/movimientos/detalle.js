@@ -78,7 +78,7 @@ const MyPage = ({ session }) => {
 			if (router.query?.personType === "Proveedor")
 				mutationGetP.mutate(router.query?.personId);
 
-			console.log(entity)
+			console.log(entity) 
 			setFilters({
 				personId: router.query?.personId,
 				from: router.query?.from,
