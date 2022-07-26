@@ -372,6 +372,8 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 								order: 'asc',
 							}}
 							value={[]}
+							getOptionLabel={(option) => option.name + ' - #' + option.accountNumber}
+							groupBy={(option) => option.providerName}
 							onSelect={(selection) => {
 								console.log(selection)
 								setProvidersAccounts(selection);								
