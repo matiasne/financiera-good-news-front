@@ -165,10 +165,13 @@ function Page({ session }) {
 								content={(data, queryData) => {
 									let items = data.data;
 									let zip = new JSZip();
-									items.map((item, i) => item.file && zip.file(
-										'goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'),
-										dataURLtoFile(item.file, 'goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'))
-									));
+									items.map((item, i) => {
+										
+										if(item.file.indexOf('data:image') > -1)	
+											item.file && zip.file('goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'),dataURLtoFile(item.file, 'goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'))
+
+									
+									)});
 
 									let downloadZip = () => zip.generateAsync({ type: "blob" }).then(function (content) {
 										saveAs(content, "goodnews-comprobantes.zip");

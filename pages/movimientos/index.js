@@ -13,7 +13,9 @@ import { useEffect, useState } from 'react'
 import Modal from 'react-gold-modal'
 import toast from 'react-hot-toast'
 import { useMutation } from 'react-query'
-
+import JSZip from 'jszip'
+import { dataURLtoFile } from '@/adapters/Parsers'
+import { saveAs } from 'file-saver'
 
 const Page = ({ session }) => {
 	const router = useRouter();
@@ -260,6 +262,30 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 		}
 	})
 
+	const mutationGetTickets = useMutation(formData => {
+		return axios(getQueryFullData('depositoSearchTickets',formData, session))
+	}, {
+		onSuccess: (data) => {
+			let items = data.data.data;
+			console.log(items)
+			let zip = new JSZip();
+			items.map((item, i) => {
+				console.log('goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'))
+
+				if(item.file.indexOf('data') > -1)
+					item.file && zip.file('goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'),	dataURLtoFile(item.file, 'goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'))
+				
+			)});
+
+			zip.generateAsync({ type: "blob" }).then(function (content) {
+				saveAs(content, "goodnews-comprobantes.zip");
+			});
+		},
+		onError: (err) => {
+			console.log(err);
+		}
+	})
+
 	useEffect(() => {
 		if (router.query?.clienteId > 0) {
 			mutationGetC.mutate(router.query?.clienteId);
@@ -283,6 +309,16 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 
 	const inputProps = {
 		onChange: (e) => setForm({ ...form, [e.name]: e.value })
+	}
+
+	const dowloandTickets = () => {
+		mutationGetTickets.mutate({
+			size: 100,
+			providerId: router.query?.providerId,
+			customerId: router.query?.customerId,
+			from: router.query?.from,
+			to: router.query?.to
+		})
 	}
 
 	let url = Object.keys(internalFilters).map(function (k) {
@@ -389,6 +425,7 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 						<Button type='success' iconStart='file' className='h-7'>Exportar</Button>
 					</a>
 				</Link>
+				<Button type='success' iconStart='file' className='h-7' onClick={dowloandTickets}>Descargar Tickets</Button>
 			</div>
 		</div>
 	)
