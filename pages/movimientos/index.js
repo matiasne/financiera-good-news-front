@@ -202,7 +202,7 @@ export default Page
 function AdvancedFilters({ session, onFilter = () => null }) {
 	const [client, setClient] = useState(null);
 	const [provider, setProvider] = useState(null);
-	const [providersAccounts, setProvidersAccounts] = useState(null);
+	const [providersAccounts, setProvidersAccounts] = useState([]);
 	const router = useRouter();
 	const [form, setForm] = useState({
 		from: null,

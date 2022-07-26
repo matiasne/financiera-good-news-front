@@ -83,7 +83,7 @@ const MyPage = ({ session }) => {
 				personId: router.query?.personId,
 				from: router.query?.from,
 				to: router.query?.to,
-				providerAccountId: router.query?.providerAccountId,
+				providerAccountId: router.query?.providerAccountId || [],
 			})
 			setUrlData({
 				personType: router.query?.personType,

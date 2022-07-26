@@ -33,7 +33,7 @@ const Form = ({ session, formData, ...props }) => {
 		file: null,
 		total: '',
 		customerId: null,
-		providerAccountId: null,
+		providerAccountId: [],
 		notes: '',
 		cuit: '',
 	});
@@ -54,7 +54,7 @@ const Form = ({ session, formData, ...props }) => {
 		let newForm = {
 			...form,
 			customerId: client && client.id,
-			providerAccountId: providerAccount && providerAccount.providerAccount.id,
+			providerAccountId: providerAccount && providerAccount.providerAccount.id 
 		};
 
 		return axios(getQueryFullData('depositoCreate', newForm, session))
@@ -72,7 +72,7 @@ const Form = ({ session, formData, ...props }) => {
 				file: null,
 				total: '',
 				customerId: client.id,
-				providerAccountId: null,
+				providerAccountId: [],
 				notes: '',
 				cuit: '',
 			});

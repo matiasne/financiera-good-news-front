@@ -682,7 +682,7 @@ export function AdvancedFilters({ session, onFilter = () => null, pillValue, sta
 			// montoHasta: '',
 			customerId: '',
 			providerId: '',
-			providerAccountId: '',
+			providerAccountId: [],
 			total: '',
 			internalId: null,
 			dtype: '',
@@ -802,7 +802,7 @@ export function AdvancedFilters({ session, onFilter = () => null, pillValue, sta
 								groupBy={(option) => option.providerName}
 								onSelect={(selection) => {
 									setProviderAccount(selection);
-									formik.setFieldValue('providerAccountId', selection?.id || null);
+									formik.setFieldValue('providerAccountId', [selection?.id] || []);
 								}}
 								disabled={pillValue === 'Todos' || pillValue === 'Retiros' || pillValue === 'Pagos Proveedores'}
 							/>
