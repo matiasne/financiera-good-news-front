@@ -14,8 +14,7 @@ import DatePicker from '@mui/lab/DatePicker';
 import TextField from '@mui/material/TextField';
 import { IconButton } from './Buttons';
 import esLocale from 'moment/locale/es';
-
-
+import Chip from '@mui/material/Chip';
 
 export default function Input({
 	name,
@@ -44,6 +43,7 @@ export default function Input({
 	const [uniqueId, setUniqueId] = useState(Math.floor(Math.random() * Date.now()));
 
 	useEffect(() => {
+		console.log(value)
 		if (type === 'date' || type === 'autocomplete' || type === 'select', type === 'multiselect') setValue(value)
 	}, [value])
 
@@ -263,6 +263,59 @@ export default function Input({
 				}}
 			/>
 			break;
+
+		/*case 'multiautocomplete':
+			
+			iconEnd = null;
+			el = <Autocomplete
+				id={extraProps['id']}
+				options={options}
+				onChange={(event, newValue) => { 					
+					console.log(newValue);
+					setValue(newValue); onChange(newValue);
+				}}
+				value={myValue}
+				multiple
+				noOptionsText='No se encontraron opciones'
+				loadingText="Cargando..."
+				ListboxProps={{ className: "input__options-list" }}
+				clearOnBlur
+				{...props.autocompleteProps}
+
+
+				renderInput={({ inputProps, InputProps }) => {
+					console.log
+					inputProps.className = extraProps.className;
+					let clearIcon = InputProps.endAdornment?.props.children[0];
+					return (
+						<div {...InputProps} className="w-full h-full flex items-center">
+							{props.autocompleteProps.loading ?
+								<div className='absolute right-0 bg-white'>
+									<Spinner className="w-4 h-4 z-10" spinnerClassName="w-4 h-4" />
+								</div>
+								:
+								<Icon glyph={'chevron-down'} className="input__field-icon --end" />
+							}
+
+							<div className='pills flex flex-nowrap gap-1 overflow-hidden w-full withScroll overflow-x-auto'>
+									{myValue.map((selected, i) => {							
+										
+										let l = props.autocompleteProps.getOptionLabel(selected)
+										let v = props.autocompleteProps.getOptionValue(selected)
+										console.log(l,v)
+										return <span span key={v} className="bg-black bg-opacity-10 rounded-full py-1 px-2 text-sm">{l}</span>
+									})}
+								</div >
+							<input type="text" {...extraProps} {...inputProps} />
+
+							
+
+							
+						</div>
+					)
+				}}
+			/>
+			break;*/
 
 		// MUI
 		case 'select':

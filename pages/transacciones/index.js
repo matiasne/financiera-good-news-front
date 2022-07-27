@@ -797,15 +797,17 @@ export function AdvancedFilters({ session, onFilter = () => null, pillValue, sta
 									sort: 'providerId',
 									order: 'asc',
 								}}
+								multiple={true}
 								value={providerAccount}
 								getOptionLabel={(option) => option.name + ' - #' + option.accountNumber}
+								getOptionValue={(option) => option.id}
 								groupBy={(option) => option.providerName}
 								onSelect={(selection) => {
 									setProviderAccount(selection);
-									formik.setFieldValue('providerAccountId', [selection?.id] || []);
+									formik.setFieldValue('providerAccountId', selection);
 								}}
 								disabled={pillValue === 'Todos' || pillValue === 'Retiros' || pillValue === 'Pagos Proveedores'}
-							/>*/}	
+							/>	*/}
 
 							<QueryMultipleSelect label="Cuenta" id="providerAccountsSearch" session={session}
 								queryData={{
@@ -813,15 +815,10 @@ export function AdvancedFilters({ session, onFilter = () => null, pillValue, sta
 									order: 'asc',
 								}}
 								value={formik.values.providerAccountId}
-								onChange={formik.handleChange}
 								getOptionValue={(option) => option.id}
 								getOptionLabel={(option) => option.providerName + ' - '+option.name + ' - #' + option.accountNumber}
 								onSelect={(selection) => {
-									
 									formik.setFieldValue('providerAccountId', selection);
-									//setProviderAccount(selection);
-									console.log(selection)
-									console.log(formik.values);
 								}}
 							/>
 

@@ -431,6 +431,7 @@ export function QueryAutocomplete({
 	}, [])
 
 	useEffect(() => {
+		
 		setValue(props.value);
 	}, [props.value])
 
@@ -469,16 +470,19 @@ export function QueryAutocomplete({
 	autocompleteProps.onBlur = () => setSearchValue();
 	// autocompleteProps.onOpen = (e) => { setSearchValue(''); }
 
-	return <Input type="autocomplete" label={label} name={id} id={id} placeholder={placeholder} value={value || ''}
+	
+	return <Input type={props.multiple?"multiautocomplete":"autocomplete"} label={label} name={id} id={id} placeholder={placeholder} value={value || ''}
 		iconEnd="search"
 		options={options}
 		autocompleteProps={autocompleteProps}
 		disabled={props.disabled}
 		onChange={(selection) => {
 			setSearchValue(); // prevents research after select
-			setValue(selection);
+			props.multiple?setValue([selection?.id] || []):setValue(selection);
 			onSelect(selection);
 		}}
+	
+	
 	/>
 }
 
@@ -524,6 +528,10 @@ export function QueryMultipleSelect({
 			CallData();
 		}
 	}, [])	
+
+	useEffect(() => {		
+		setValue(props.value);
+	}, [props.value])
 
 	async function CallData() {
 		let newQueryData = queryData;
