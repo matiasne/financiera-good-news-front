@@ -300,9 +300,9 @@ export default function Input({
 						{selected.map((value, i) => {
 							if(props.multiSelectProps){
 								let optSelected = options.filter((opt) => props.multiSelectProps.getOptionValue(opt) === value)
-								console.log(optSelected)
 								let l = props.multiSelectProps.getOptionLabel(optSelected[0])
 								let v = props.multiSelectProps.getOptionValue(optSelected[0])
+								if(l)
 								return <span span key={v} className="bg-black bg-opacity-10 rounded-full py-1 px-2 text-sm">{l}</span>
 							}
 							else{

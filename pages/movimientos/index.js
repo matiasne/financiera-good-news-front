@@ -373,7 +373,7 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 							}}
 							value={[]}
 							getOptionValue={(option) => option.id}
-							getOptionLabel={(option) => option.name + ' - #' + option.accountNumber}
+							getOptionLabel={(option) => option.providerName + ' - '+option.name + ' - #' + option.accountNumber}
 							onSelect={(selection) => {
 								console.log(selection)
 								setProvidersAccounts(selection);								

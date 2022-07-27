@@ -1,5 +1,5 @@
 import { forceTime, getToday, parseDatetime, parseDtype, parseMoney, parseStatus } from '@/adapters/Parsers'
-import QueryContent, { getQueryFullData, QueryAutocomplete } from '@/adapters/Querys'
+import QueryContent, { getQueryFullData, QueryAutocomplete, QueryMultipleSelect } from '@/adapters/Querys'
 import Button from '@/components/base/Buttons'
 import Col, { Container, Row, Rows } from '@/components/base/Grid'
 import Input from '@/components/base/Inputs'
@@ -673,7 +673,7 @@ export default Page
 export function AdvancedFilters({ session, onFilter = () => null, pillValue, startFromToday = false }) {
 	const [client, setClient] = useState(null);
 	const [provider, setProvider] = useState(null);
-	const [providerAccount, setProviderAccount] = useState(null);
+	const [providerAccount, setProviderAccount] = useState([]);
 	const formik = useFormik({
 		initialValues: {
 			from: null,
@@ -705,8 +705,8 @@ export function AdvancedFilters({ session, onFilter = () => null, pillValue, sta
 		formik.submitForm();
 		setClient(null);
 		setProvider(null);
-		setProviderAccount(null);
-		// console.log(formik.values);
+		setProviderAccount([]);
+		 console.log(formik.values);
 	}
 
 	useEffect(() => {
@@ -792,7 +792,7 @@ export function AdvancedFilters({ session, onFilter = () => null, pillValue, sta
 					</Col>
 					<Col>
 						<div className={(pillValue === 'Todos' || pillValue === 'Retiros' || pillValue === 'Pagos Proveedores') && "opacity-0 pointer-events-none"}>
-							<QueryAutocomplete label="Cuenta" id="providerAccountsSearch" session={session}
+							{/*<QueryAutocomplete label="Cuenta" id="providerAccountsSearch" session={session}
 								queryData={{
 									sort: 'providerId',
 									order: 'asc',
@@ -805,7 +805,26 @@ export function AdvancedFilters({ session, onFilter = () => null, pillValue, sta
 									formik.setFieldValue('providerAccountId', [selection?.id] || []);
 								}}
 								disabled={pillValue === 'Todos' || pillValue === 'Retiros' || pillValue === 'Pagos Proveedores'}
+							/>*/}	
+
+							<QueryMultipleSelect label="Cuenta" id="providerAccountsSearch" session={session}
+								queryData={{
+									sort: 'providerId',
+									order: 'asc',
+								}}
+								value={formik.values.providerAccountId}
+								onChange={formik.handleChange}
+								getOptionValue={(option) => option.id}
+								getOptionLabel={(option) => option.providerName + ' - '+option.name + ' - #' + option.accountNumber}
+								onSelect={(selection) => {
+									
+									formik.setFieldValue('providerAccountId', selection);
+									//setProviderAccount(selection);
+									console.log(selection)
+									console.log(formik.values);
+								}}
 							/>
+
 						</div>
 					</Col>
 					<Col>
