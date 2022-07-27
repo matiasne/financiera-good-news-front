@@ -276,7 +276,7 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 		if (router.query?.cuentaProveedorId > 0) {
 			mutationGetPA.mutate(router.query?.cuentaProveedorId);
 		} else {
-			providersAccounts && setProvidersAccounts(null);
+			providersAccounts && setProvidersAccounts([]);
 		}
 
 	}, [router])
@@ -326,7 +326,7 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 						getOptionLabel={(option) => option.name}
 						onSelect={(selection) => {
 							setClient(selection);
-							selection && setProvider(null) && setProvidersAccounts(null);
+							selection && setProvider(null) && setProvidersAccounts([]);
 							selection && router.push('?clienteId=' + selection.id);
 							!selection && router.push('?', { shallow: true });
 						}}
@@ -342,43 +342,26 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 						getOptionLabel={(option) => option.name}
 						onSelect={(selection) => {
 							setProvider(selection);
-							selection && setClient(null) && setSProviderAccountS(null);
+							selection && setClient(null) && setSProviderAccountS([]);
 							selection && router.push('?proveedorId=' + selection.id);
 							!selection && router.push('?', { shallow: true });
 						}}
 					/>
-				</div>
-				{/*<div className='w-full'>
-					<QueryAutocomplete label="Cuenta" id="providerAccountsSearch" session={session}
-						queryData={{
-							sort: 'providerId',
-							order: 'asc',
-						}}
-						value={providersAccounts}
-						getOptionLabel={(option) => option.name + ' - #' + option.accountNumber}
-						groupBy={(option) => option.providerName}
-						onSelect={(selection) => {
-							setProvidersAccounts(selection);
-							selection && setClient(null) && setProvider(null);
-							selection && router.push('?cuentaProveedorId=' + selection.id);
-							!selection && router.push('?', { shallow: true });
-						}}
-					/>
-					</div>*/}
+				</div>				
 				<div className='w-full'>
 					<QueryMultipleSelect label="Cuenta" id="providerAccountsSearch" session={session}
 							queryData={{
 								sort: 'providerId',
 								order: 'asc',
 							}}
-							value={[]}
+							value={providersAccounts}
 							getOptionValue={(option) => option.id}
 							getOptionLabel={(option) => option.providerName + ' - '+option.name + ' - #' + option.accountNumber}
 							onSelect={(selection) => {
 								console.log(selection)
 								setProvidersAccounts(selection);								
 								selection && setClient(null) && setProvider(null);
-								selection && router.push('?cuentaProveedorId=' + selection);
+								//selection && router.push('?cuentaProveedorId=' + selection);
 								!selection && router.push('?', { shallow: true });
 							}}
 						/>

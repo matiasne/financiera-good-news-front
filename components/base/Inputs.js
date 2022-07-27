@@ -43,7 +43,6 @@ export default function Input({
 	const [uniqueId, setUniqueId] = useState(Math.floor(Math.random() * Date.now()));
 
 	useEffect(() => {
-		console.log(value)
 		if (type === 'date' || type === 'autocomplete' || type === 'select', type === 'multiselect') setValue(value)
 	}, [value])
 
