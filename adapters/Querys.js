@@ -507,18 +507,9 @@ export function QueryMultipleSelect({
 		mutationKey: queryId,
 		onSuccess: (data, variables, context) => {
 			if (data.config.method === 'get') {
-				console.log(data)
 				setOptions(data.data);
 			} else {
-				console.log(props)
-				let options = data.data.data.map(item => {
-				return 	{
-						label: item[optionLabel],
-						value: item[optionValue],
-					}
-				})
-				console.log(options)
-				setOptions(options);
+				setOptions(data.data.data);
 			}
 		},
 		onError: (err) => {
@@ -547,16 +538,17 @@ export function QueryMultipleSelect({
 		if (newQueryData) mutation.mutate(newFormData);
 	}
 
-	let multipleSelectteProps = { ...props };
-	multipleSelectteProps.loading = mutation.isLoading;
-	multipleSelectteProps.onInputChange = (e) => { e && setSearchValue(e.target.value); }
-	multipleSelectteProps.clearOnBlur = true;
-	multipleSelectteProps.blurOnSelect = true;
-	multipleSelectteProps.onBlur = () => setSearchValue();
+	let multiSelectProps = { ...props };
+	multiSelectProps.loading = mutation.isLoading;
+	multiSelectProps.onInputChange = (e) => { e && setSearchValue(e.target.value); }
+	multiSelectProps.clearOnBlur = true;
+	multiSelectProps.blurOnSelect = true;
+	multiSelectProps.onBlur = () => setSearchValue();
 	// autocompleteProps.onOpen = (e) => { setSearchValue(''); }
 
 	return <div >
 			<Input type="multiselect" label={label} name={id} id={id} placeholder={placeholder} value={value} 
+					multiSelectProps={multiSelectProps}
 					onChange={(e) => {
 						setSearchValue(); // prevents research after select
 						console.log(e)

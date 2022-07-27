@@ -298,8 +298,19 @@ export default function Input({
 				renderValue={(selected) => (
 					<div className='pills flex flex-nowrap gap-1 overflow-hidden w-full withScroll overflow-x-auto'>
 						{selected.map((value, i) => {
-							const label = options.filter((opt) => opt.value === value)[0]?.label;
-							return <span span key={value} className="bg-black bg-opacity-10 rounded-full py-1 px-2 text-sm">{label}</span>
+							if(props.multiSelectProps){
+								let optSelected = options.filter((opt) => props.multiSelectProps.getOptionValue(opt) === value)
+								console.log(optSelected)
+								let l = props.multiSelectProps.getOptionLabel(optSelected[0])
+								let v = props.multiSelectProps.getOptionValue(optSelected[0])
+								return <span span key={v} className="bg-black bg-opacity-10 rounded-full py-1 px-2 text-sm">{l}</span>
+							}
+							else{
+								const label = options.filter((opt) => opt.value === value)[0]?.label;
+								return <span span key={value} className="bg-black bg-opacity-10 rounded-full py-1 px-2 text-sm">{label}</span>
+							}
+							
+							
 						})}
 					</div >
 				)
@@ -309,7 +320,13 @@ export default function Input({
 				{
 					options.map(opt => {
 						if (typeof opt === 'object') {
-							return <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
+							if(props.multiSelectProps){
+								let label = props.multiSelectProps.getOptionLabel(opt)
+								let value = props.multiSelectProps.getOptionValue(opt)
+								return <MenuItem key={value} value={value}>{label}</MenuItem>
+							}
+							else
+								return <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
 						} else {
 							return <MenuItem key={opt} value={opt}>{opt}</MenuItem>
 						}
