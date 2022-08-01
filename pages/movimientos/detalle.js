@@ -114,7 +114,7 @@ const MyPage = ({ session }) => {
 				}}
 				content={(data) => {
 					return <div className='w-full h-full absolute'>
-						<PDFViewer style={{ height: '100%', width: '100%' }}>
+						<PDFViewer style={{ height: '90%', width: '95%' }}>
 							<Document title={"Financiera Good News - Movimientos"}>
 								<Page size="A4" style={styles.page}>
 									<View style={styles.container}>
