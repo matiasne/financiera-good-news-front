@@ -160,10 +160,10 @@ export default MyPage
 
 const ItemsTable = ({ data, entity }) => {
 
-	let cuponesPendientes = 0;
+	/*let cuponesPendientes = 0;
 	data.data.map(item => {
 		if (item.transactionStatus === 'PENDIENTE_DE_ACREDITACION' || item.transactionStatus === 'CUIT_INCORRECTO') cuponesPendientes += item.total;
-	})
+	})*/
 
 	return <View style={styles.tableContainer}>
 		<TableHeader />
@@ -178,11 +178,11 @@ const ItemsTable = ({ data, entity }) => {
 		</View>		
 		<View style={styles.tr} key={'totales2'}>
 			<Text style={styles.tdTotal}>Total Cliente Cuenta Corriente en Pesos</Text>
-			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance)}</Text>
+			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance + entity.pendingBalance)}</Text>
 		</View>
 		<View style={styles.tr} key={'totales3'}>
 			<Text style={styles.tdTotal}>Total Cliente Excluyendo Cupones Pendientes</Text>
-			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance - cuponesPendientes)}</Text>
+			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance)}</Text>
 		</View>
 	</View>
 };

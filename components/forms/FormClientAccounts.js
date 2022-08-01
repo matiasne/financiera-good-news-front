@@ -50,7 +50,7 @@ const Form = ({ session, formData, ...props }) => {
 					newCommissions.push({
 						id: comm.id,
 						providerId: comm.providerAccount.provider.name.id,
-						providerAccountId: [comm.providerAccount.id],
+						providerAccountId: comm.providerAccount.id,
 						providerName: comm.providerAccount.provider.name,
 						accountNumber: comm.providerAccount.accountNumber,
 						accountName: comm.providerAccount.name,
@@ -106,7 +106,7 @@ const Form = ({ session, formData, ...props }) => {
 				providerName: selection.providerName,
 				accountNumber: selection.accountNumber,
 				accountName: selection.name,
-				providerAccountId: [selection.id],
+				providerAccountId: selection.id,
 				providerId: selection.providerId,
 				fee: 0,
 				providerFee: selection.fee,
@@ -161,7 +161,7 @@ const Form = ({ session, formData, ...props }) => {
 									queryParam="accountNumber"
 									getOptionLabel={(option) => option.accountNumber}
 									groupBy={(option) => option.providerName}
-									getOptionDisabled={(option) => accounts && accounts.filter((acc) => acc.providerAccountId.includes(option.id)).length > 0}
+									getOptionDisabled={(option) => accounts && accounts.filter((acc) => acc.providerAccountId === option.id).length > 0}
 									renderOption={(props, option) => (
 										<li {...props} className={classNames(props.className, "px-3 py-2")}>
 											<CardName sm glyph="moneybag"
