@@ -25,6 +25,8 @@ const Page = ({ session }) => {
 
 	const [showFilters, setShowFilters] = useState(false);
 	const [filters, setFilters] = useState({});
+	const [itemsAmount, setItemsAmount] = useState({});
+	
 
 	const mutationDelete = useMutation(formData => {
 		return axios(getQueryFullData('providerDelete', deleteId, session))
@@ -120,7 +122,7 @@ const Page = ({ session }) => {
 
 				<div className="contentSet__shrink">
 					{/* FILTERS */}
-					<AdvancedFilters session={session} onFilter={setFilters} />
+					<AdvancedFilters session={session} onFilter={setFilters} itemsAmount={itemsAmount} />
 				</div>
 
 				<div className="contentSet__scrollable">
@@ -138,6 +140,7 @@ const Page = ({ session }) => {
 							// emptyContent={<NoResults />}
 							content={(data, queryData) => {
 								let items = data.data;
+								setItemsAmount(data.total);
 								return (
 									<Table striped={false} lined={true}
 										tableData={items}
@@ -188,25 +191,7 @@ const Page = ({ session }) => {
 
 			</article>
 
-			<Modal
-				title="Detalle de Movimiento"
-				body={
-					"El resultado de movimientos debe contener menos de 100 items"
-				}
-				display={true}
-				cancelIsClose
-				overlayIsCancel
-				options={[
-					{
-						text: 'Aceptar',
-						handler: () => {},
-					}
-				]}
-				cancel={{
-					text: 'Cancelar',
-					handler: () => {  }
-				}}				
-			/>
+			
 		</>
 
 	)
@@ -220,7 +205,7 @@ Page.layoutProps = {
 export default Page
 
 // PAGE FILTERS
-function AdvancedFilters({ session, onFilter = () => null }) {
+function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 	const [client, setClient] = useState(null);
 	const [provider, setProvider] = useState(null);
 	const [providersAccounts, setProvidersAccounts] = useState([]);
@@ -230,6 +215,7 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 		to: null,
 	})
 	const [internalFilters, setInternalFilters] = useState({});
+	const [showItemsAmountAlert, setShowItemsAmountAlert] = useState(false);
 
 	useEffect(() => {
 		setInternalFilters({
@@ -282,6 +268,7 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 	})
 
 	const mutationGetTickets = useMutation(formData => {
+		
 		return axios(getQueryFullData('depositoSearchTickets',formData, session))
 	}, {
 		onSuccess: (data) => {
@@ -331,13 +318,20 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 	}
 
 	const dowloandTickets = () => {
-		mutationGetTickets.mutate({
-			size: 100,
-			providerId: router.query?.providerId,
-			customerId: router.query?.customerId,
-			from: router.query?.from,
-			to: router.query?.to
-		})
+		if(itemsAmount > 100){		
+			setShowItemsAmountAlert(true)
+		}
+		else{
+			console.log(provider?.id)
+			mutationGetTickets.mutate({
+				size: 100,
+				providerId: provider?.id,
+				customerId: client?.id,
+				from: form.from,
+				to: form.to
+			})
+		}
+		
 	}
 
 	let url = Object.keys(internalFilters).map(function (k) {
@@ -347,6 +341,7 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 	}).join('&');
 
 	return (
+		<>
 		<div className="flex gap-3 justify-between">
 			<div className='flex gap-3 w-full'>
 				<div>
@@ -397,7 +392,7 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 						getOptionLabel={(option) => option.name}
 						onSelect={(selection) => {
 							setProvider(selection);
-							selection && setClient(null) && setSProviderAccountS(null);
+							selection && setClient(null) && setProvidersAccounts(null);
 							selection && router.push('?proveedorId=' + selection.id);
 							!selection && router.push('?', { shallow: true });
 						}}
@@ -447,6 +442,29 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 				<Button type='success' iconStart='file' className='h-7' onClick={dowloandTickets}>Descargar Tickets</Button>
 			</div>
 		</div>
+		<Modal
+				
+				body={
+					"El resultado de movimientos debe contener menos de 100 items"
+				}
+				display={showItemsAmountAlert}
+				cancelIsClose
+				overlayIsCancel
+				options={[
+					{
+						text: 'Aceptar',
+						handler: () => {setShowItemsAmountAlert(false)},
+					}
+				]}
+				cancel={{
+					text: 'Cancelar',
+					handler: () => { setShowItemsAmountAlert(false) }
+				}}				
+			/>
+		</>
+		
+
+		
 	)
 }
 
