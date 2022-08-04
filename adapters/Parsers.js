@@ -41,8 +41,7 @@ export function parseDatetime(date) {
 	if (date !== null) {
 		let myDate = new Date(date);
 		let newDate = numberFormat(myDate.getDate()) + '/' + numberFormat(myDate.getMonth() + 1) + '/' + myDate.getFullYear(); // DD MM AAAA
-		let newTime = numberFormat(myDate.getHours()) + ':' + numberFormat(myDate.getMinutes());
-		return newDate + ' ' + newTime;
+		return newDate;
 	} else {
 		return '-'
 	}

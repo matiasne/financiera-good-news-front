@@ -126,7 +126,7 @@ export const styles = StyleSheet.create({
 		paddingHorizontal: 2,
 	},
 	tdSM: {
-		width: "10%",
+		width: "8%",
 
 		fontFamily: 'Open Sans',
 		fontSize: 8,

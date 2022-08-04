@@ -366,7 +366,7 @@ function MyDropzone({ onChange = () => null, forceRefresh = 0 }) {
 
 	const files = preview && <li key='preview' className="text-center">
 		{preview?.indexOf('image') > -1 ?
-			<div className="dropZone__preview" >
+			<div className="file-iframe" >
 				<img src={preview} key={preview} />
 			</div>
 			:
