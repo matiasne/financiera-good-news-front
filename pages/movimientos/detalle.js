@@ -144,6 +144,8 @@ const MyPage = ({ session }) => {
 					</div>
 				}}
 			/>
+
+			
 		</>
 	);
 }

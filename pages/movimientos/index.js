@@ -188,6 +188,25 @@ const Page = ({ session }) => {
 
 			</article>
 
+			<Modal
+				title="Detalle de Movimiento"
+				body={
+					"El resultado de movimientos debe contener menos de 100 items"
+				}
+				display={true}
+				cancelIsClose
+				overlayIsCancel
+				options={[
+					{
+						text: 'Aceptar',
+						handler: () => {},
+					}
+				]}
+				cancel={{
+					text: 'Cancelar',
+					handler: () => {  }
+				}}				
+			/>
 		</>
 
 	)
