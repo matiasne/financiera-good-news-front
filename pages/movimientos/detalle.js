@@ -78,7 +78,7 @@ const MyPage = ({ session }) => {
 			if (router.query?.personType === "Proveedor")
 				mutationGetP.mutate(router.query?.personId);
 
-			console.log(entity) 
+			console.log(entity)
 			setFilters({
 				personId: router.query?.personId,
 				from: router.query?.from,
@@ -114,7 +114,7 @@ const MyPage = ({ session }) => {
 				}}
 				content={(data) => {
 					return <div className='w-full h-full absolute'>
-						<PDFViewer style={{ height: '90%', width: '95%' }}>
+						<PDFViewer style={{ height: '100%', width: '100%' }}>
 							<Document title={"Financiera Good News - Movimientos"}>
 								<Page size="A4" style={styles.page}>
 									<View style={styles.container}>
@@ -134,9 +134,7 @@ const MyPage = ({ session }) => {
 											<Text style={styles.cardP}>Saldo Ant.: {parseMoney(data.data[0]?.prevBalance)}</Text>
 										</View>
 									</View>
-
 									<ItemsTable data={data} entity={entity}/>
-
 								</Page>
 							</Document>
 
@@ -144,6 +142,8 @@ const MyPage = ({ session }) => {
 					</div>
 				}}
 			/>
+
+			
 		</>
 	);
 }
@@ -160,10 +160,10 @@ export default MyPage
 
 const ItemsTable = ({ data, entity }) => {
 
-	/*let cuponesPendientes = 0;
+	let cuponesPendientes = 0;
 	data.data.map(item => {
 		if (item.transactionStatus === 'PENDIENTE_DE_ACREDITACION' || item.transactionStatus === 'CUIT_INCORRECTO') cuponesPendientes += item.total;
-	})*/
+	})
 
 	return <View style={styles.tableContainer}>
 		<TableHeader />
@@ -178,11 +178,11 @@ const ItemsTable = ({ data, entity }) => {
 		</View>		
 		<View style={styles.tr} key={'totales2'}>
 			<Text style={styles.tdTotal}>Total Cliente Cuenta Corriente en Pesos</Text>
-			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance + entity.pendingBalance)}</Text>
+			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance)}</Text>
 		</View>
 		<View style={styles.tr} key={'totales3'}>
 			<Text style={styles.tdTotal}>Total Cliente Excluyendo Cupones Pendientes</Text>
-			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance)}</Text>
+			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance - cuponesPendientes)}</Text>
 		</View>
 	</View>
 };
