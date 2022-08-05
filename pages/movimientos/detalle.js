@@ -191,13 +191,13 @@ const TableRow = ({ items }) => {
 	const rows = items.map((item) => (
 		<View style={styles.tr} key={item.id.toString()}>
 			<Text style={styles.thID}>{item.id}</Text>
-			<Text style={styles.td}>{parseDatetime(item.createdAt)}</Text>
-			<Text style={styles.td}>{item.concept}</Text>
+			<Text style={styles.tdDate}>{parseDatetime(item.createdAt)}</Text>
+			<Text style={styles.tdConcept }>{item.concept}</Text>
 			<Text style={styles.tdSM}>{item.personName}</Text>
-			<Text style={styles.thMONEY}>{parseMoney(item.total)}</Text>
-			<Text style={styles.thMONEY}>{parseMoney(item.total - ((item.total / 100) * item.fee ))}</Text>
+			<Text style={styles.tdMONEY}>{parseMoney(item.total)}</Text>
+			<Text style={styles.tdMONEY}>{parseMoney(item.total - ((item.total / 100) * item.fee ))}</Text>
 			{/* <Text style={styles.thMONEY}>{parseMoney(item.prevBalance)}</Text> */}
-			<Text style={styles.thMONEY}>{parseMoney(item.balance)}</Text>
+			<Text style={styles.tdMONEY}>{parseMoney(item.balance)}</Text>
 		</View>
 	));
 	return <>{rows}</>;
@@ -206,8 +206,8 @@ const TableRow = ({ items }) => {
 const TableHeader = ({ items }) => {
 	return <View style={styles.tr} key={"header"}>
 		<Text style={styles.thID}>ID</Text>
-		<Text style={styles.th}>Fecha</Text>
-		<Text style={styles.th}>Concepto</Text>
+		<Text style={styles.thDate}>Fecha</Text>
+		<Text style={styles.thConcept}>Concepto</Text>
 		<Text style={styles.thSM}>Persona</Text>
 		<Text style={styles.thMONEY}>Monto</Text>
 		<Text style={styles.thMONEY}>Total</Text>

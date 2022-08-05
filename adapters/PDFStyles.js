@@ -5,7 +5,7 @@ export const styles = StyleSheet.create({
 	// VIEWS
 	page: {
 		flexDirection: 'column',
-		padding: 20,
+		padding: 10,
 		paddingTop: 15,
 		paddingBottom: 15,
 	},
@@ -72,6 +72,7 @@ export const styles = StyleSheet.create({
 		marginTop: 10,
 	},
 	tr: {
+		width: '90%',
 		flexDirection: "row",
 		alignItems: "center",
 		borderBottomWidth: 1,
@@ -81,8 +82,24 @@ export const styles = StyleSheet.create({
 		paddingBottom: 4,
 	},
 	th: {
-		width: "18%",
 
+		fontFamily: 'Open Sans',
+		fontWeight: 'bold',
+		fontSize: 8,
+		color: '#787878',
+		paddingHorizontal: 2,
+	},
+	thConcept:{
+		width: '20%',
+		fontFamily: 'Open Sans',
+		fontWeight: 'bold',
+		fontSize: 8,
+		color: '#787878',
+		paddingHorizontal: 2,
+	},
+	tdConcept:{
+		textOverflow: 'ellipsis',
+		width: '20%',
 		fontFamily: 'Open Sans',
 		fontWeight: 'bold',
 		fontSize: 8,
@@ -90,8 +107,7 @@ export const styles = StyleSheet.create({
 		paddingHorizontal: 2,
 	},
 	thID: {
-		width: "8%",
-
+		width: '5%',
 		fontFamily: 'Open Sans',
 		fontWeight: 'bold',
 		fontSize: 8,
@@ -99,8 +115,15 @@ export const styles = StyleSheet.create({
 		paddingHorizontal: 2,
 	},
 	thSM: {
-		width: "10%",
-
+		width: '10%',
+		fontFamily: 'Open Sans',
+		fontWeight: 'bold',
+		fontSize: 8,
+		color: '#787878',
+		paddingHorizontal: 2,
+	},
+	tdSM: {
+		width: '10%',
 		fontFamily: 'Open Sans',
 		fontWeight: 'bold',
 		fontSize: 8,
@@ -108,26 +131,38 @@ export const styles = StyleSheet.create({
 		paddingHorizontal: 2,
 	},
 	thMONEY: {
-		width: "18%",
-
+		width: '15%',
 		fontFamily: 'Open Sans',
 		fontWeight: 'bold',
 		fontSize: 8,
 		color: '#787878',
 		textAlign: 'right',
-		paddingHorizontal: 2,
+		paddingHorizontal: 4,
+	},
+	tdMONEY: {
+		width: '15%',
+		fontFamily: 'Open Sans',
+		fontWeight: 'bold',
+		fontSize: 8,
+		color: '#787878',
+		textAlign: 'right',
+		paddingHorizontal: 4,
 	},
 	td: {
-		width: "18%",
-
 		fontFamily: 'Open Sans',
 		fontSize: 8,
 		color: '#787878',
 		paddingHorizontal: 2,
 	},
-	tdSM: {
-		width: "8%",
-
+	thDate: {
+		width: '15%',
+		fontFamily: 'Open Sans',
+		fontSize: 8,
+		color: '#787878',
+		paddingHorizontal: 2,
+	},
+	tdDate: {
+		width: '15%',
 		fontFamily: 'Open Sans',
 		fontSize: 8,
 		color: '#787878',
