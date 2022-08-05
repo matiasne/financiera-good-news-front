@@ -172,16 +172,16 @@ const ItemsTable = ({ data, entity }) => {
 		<TableRow items={data.data} />
 		{/*<TableFooter items={data.items} />*/}
 
-		<View style={styles.tr} key={'totales0'}></View>
-		<View style={styles.tr} key={'totales1'}>
+		<View style={styles.totales} key={'totales0'}></View>
+		<View style={styles.totales} key={'totales1'}>
 			<Text style={styles.tdTotal}>Saldo Pendiente</Text>
 			<Text style={styles.thMONEY}>{parseMoney(entity.pendingBalance)}</Text>
 		</View>		
-		<View style={styles.tr} key={'totales2'}>
+		<View style={styles.totales} key={'totales2'}>
 			<Text style={styles.tdTotal}>Total Cliente Cuenta Corriente en Pesos</Text>
 			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance)}</Text>
 		</View>
-		<View style={styles.tr} key={'totales3'}>
+		<View style={styles.totales} key={'totales3'}>
 			<Text style={styles.tdTotal}>Total Cliente Excluyendo Cupones Pendientes</Text>
 			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance - cuponesPendientes)}</Text>
 		</View>
@@ -192,8 +192,8 @@ const TableRow = ({ items }) => {
 	const rows = items.map((item) => (
 		<View style={styles.tr} key={item.id.toString()}>
 			<Text style={styles.thID}>{item.id}</Text>
-			<Text style={styles.td}>{parseDatetime(item.createdAt)}</Text>
-			<Text style={styles.td}>{item.concept}</Text>
+			<Text style={styles.tdDate}>{parseDatetime(item.createdAt)}</Text>
+			<Text style={styles.tdConcept}>{item.concept}</Text>
 			<Text style={styles.tdSM}>{item.personName}</Text>
 			<Text style={styles.thMONEY}>{parseMoney(item.total)}</Text>
 			<Text style={styles.thMONEY}>{parseMoney(item.total - ((item.total / 100) * item.fee ))}</Text>
@@ -207,8 +207,8 @@ const TableRow = ({ items }) => {
 const TableHeader = ({ items }) => {
 	return <View style={styles.tr} key={"header"}>
 		<Text style={styles.thID}>ID</Text>
-		<Text style={styles.th}>Fecha</Text>
-		<Text style={styles.th}>Concepto</Text>
+		<Text style={styles.thDate}>Fecha</Text>
+		<Text style={styles.thConcept}>Concepto</Text>
 		<Text style={styles.thSM}>Persona</Text>
 		<Text style={styles.thMONEY}>Monto</Text>
 		<Text style={styles.thMONEY}>Total</Text>

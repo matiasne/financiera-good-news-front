@@ -6,9 +6,9 @@ export const styles = StyleSheet.create({
 	page: {
 		flexDirection: 'column',
 		padding: 0,
-		paddingLeft:5,
-		paddingRight:5,
-		paddingTop: 15,
+		paddingLeft:30,
+		paddingRight:30,
+		paddingTop: 50,
 		paddingBottom: 15,
 	},
 	container: {
@@ -69,9 +69,18 @@ export const styles = StyleSheet.create({
 
 	// TABLE
 	tableContainer: {
-		flexDirection: "col",
-		flexWrap: "wrap",
+		width: 600,
 		marginTop: 10,
+	},
+	totales:{
+		flexDirection: "row",
+		alignItems: "center",
+		borderBottomWidth: 1,
+		borderBottomColor: '#ddd',
+		borderBottomStyle: 'solid',
+		marginBottom: 14,
+		marginRight: 60,
+		paddingBottom: 14,
 	},
 	tr: {
 		flexDirection: "row",
@@ -80,6 +89,7 @@ export const styles = StyleSheet.create({
 		borderBottomColor: '#ddd',
 		borderBottomStyle: 'solid',
 		marginBottom: 14,
+
 		paddingBottom: 14,
 	},
 	th: {
@@ -92,7 +102,7 @@ export const styles = StyleSheet.create({
 		paddingHorizontal: 2,
 	},
 	thID: {
-		width: "8%",
+		width: 30,
 
 		fontFamily: 'Open Sans',
 		fontWeight: 'bold',
@@ -101,7 +111,7 @@ export const styles = StyleSheet.create({
 		paddingHorizontal: 2,
 	},
 	thSM: {
-		width: "10%",
+		width: 50,
 
 		fontFamily: 'Open Sans',
 		fontWeight: 'bold',
@@ -110,7 +120,7 @@ export const styles = StyleSheet.create({
 		paddingHorizontal: 2,
 	},
 	thMONEY: {
-		width: "18%",
+		width: 90,
 
 		fontFamily: 'Open Sans',
 		fontWeight: 'bold',
@@ -128,8 +138,36 @@ export const styles = StyleSheet.create({
 		paddingHorizontal: 2,
 	},
 	tdSM: {
-		width: "8%",
+		width: 50,
 
+		fontFamily: 'Open Sans',
+		fontSize: 8,
+		color: '#787878',
+		paddingHorizontal: 2,
+	},
+	thDate: {	
+		width: 70,
+		fontFamily: 'Open Sans',
+		fontSize: 8,
+		color: '#787878',
+		paddingHorizontal: 2,
+	},
+	tdDate: {	
+		width: 70,
+		fontFamily: 'Open Sans',
+		fontSize: 8,
+		color: '#787878',
+		paddingHorizontal: 2,
+	},
+	thConcept: {	
+		width: 110,
+		fontFamily: 'Open Sans',
+		fontSize: 8,
+		color: '#787878',
+		paddingHorizontal: 2,
+	},
+	tdConcept: {	
+		width: 110,
 		fontFamily: 'Open Sans',
 		fontSize: 8,
 		color: '#787878',
