@@ -1,4 +1,4 @@
-import { forceTime, parseDatetime, parseDtype, parseMoney, parseStatus } from '@/adapters/Parsers'
+import { forceTime, parseDatetime, parseDtype, parseMoney, parseTotalMoney, parseStatus } from '@/adapters/Parsers'
 import QueryContent, { getQueryFullData, QueryAutocomplete,QueryMultipleSelect } from '@/adapters/Querys'
 import Button, { IconButton } from '@/components/base/Buttons'
 import Col, { Container, Row, Rows } from '@/components/base/Grid'
@@ -95,8 +95,12 @@ const Page = ({ session }) => {
 		{
 			id: 'fee',
 			label: 'Total',
-			type: 'money',
-			getContent: (e) => e.total - ((e.total / 100) * e.fee ),
+			type: 'text',
+			getContent: (e) => {
+				let total = e.total - ((e.total / 100) * e.fee )
+				let value = parseTotalMoney(e.prevBalance,e.balance,total)
+				return value;
+			},
 			isSortable: false,
 		},
 		{

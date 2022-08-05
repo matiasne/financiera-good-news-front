@@ -2,7 +2,7 @@ export function parseMoney(x, hasCents = true) {
 	return '$ ' + parseThousands(x, hasCents);
 }
 
-export function parseBalanceMoney(prevBalance,actualBalance,x, hasCents = true) {
+export function parseTotalMoney(prevBalance,actualBalance,x, hasCents = true) {
 	if(actualBalance > prevBalance) 
 		return '$ ' + parseThousands(x, hasCents);
 	else{	

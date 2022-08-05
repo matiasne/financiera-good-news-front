@@ -1,4 +1,4 @@
-import { parseDate, parseDatetime, parseDtype, parseMoney, parseBalanceMoney } from '@/adapters/Parsers'
+import { parseDate, parseDatetime, parseDtype, parseMoney, parseTotalMoney } from '@/adapters/Parsers'
 import QueryContent, { getQueryFullData, QueryAutocomplete } from '@/adapters/Querys'
 import Button from '@/components/base/Buttons'
 import Col, { Container, Row, Rows } from '@/components/base/Grid'
@@ -183,7 +183,7 @@ const ItemsTable = ({ data, entity }) => {
 		</View>
 		<View style={styles.totales} key={'totales3'}>
 			<Text style={styles.tdTotal}>Total Cliente Excluyendo Cupones Pendientes</Text>
-			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance - cuponesPendientes)}</Text>
+			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance - cuponesPendientes - entity.pendingBalance)}</Text>
 		</View>
 	</View>
 };
@@ -196,7 +196,7 @@ const TableRow = ({ items }) => {
 			<Text style={styles.tdConcept}>{item.concept}</Text>
 			<Text style={styles.tdSM}>{item.personName}</Text>
 			<Text style={styles.thMONEY}>{parseMoney(item.total)}</Text>
-			<Text style={styles.thMONEY}>{parseBalanceMoney(item.prevBalance,item.balance,item.total - ((item.total / 100) * item.fee ))}</Text>
+			<Text style={styles.thMONEY}>{parseTotalMoney(item.prevBalance,item.balance,item.total - ((item.total / 100) * item.fee ))}</Text>
 			{/* <Text style={styles.thMONEY}>{parseMoney(item.prevBalance)}</Text> */}
 			<Text style={styles.thMONEY}>{parseMoney(item.balance)}</Text>
 		</View>
