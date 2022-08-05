@@ -2,6 +2,16 @@ export function parseMoney(x, hasCents = true) {
 	return '$ ' + parseThousands(x, hasCents);
 }
 
+export function parseTotalMoney(x, hasCents = true) {
+	if(x > 0) 
+		return '$ ' + parseThousands(x, hasCents);
+	else{
+		x = Math.abs(x);	
+		return '$ (' +parseThousands(x, hasCents)+')';
+	}
+}
+
+
 export function parseThousands(x, hasCents = false) {
 	if (!x) {
 		return 0;
