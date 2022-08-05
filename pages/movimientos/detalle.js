@@ -192,7 +192,7 @@ const TableRow = ({ items }) => {
 	const rows = items.map((item) => (
 		<View style={styles.tr} key={item.id.toString()}>
 			<Text style={styles.thID}>{item.id}</Text>
-			<Text style={styles.tdDate}>{parseDatetime(item.createdAt)}</Text>
+			<Text style={styles.tdDate}>{parseDate(item.createdAt)}</Text>
 			<Text style={styles.tdConcept}>{item.concept}</Text>
 			<Text style={styles.tdSM}>{item.personName}</Text>
 			<Text style={styles.thMONEY}>{parseMoney(item.total)}</Text>

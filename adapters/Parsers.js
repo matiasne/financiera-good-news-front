@@ -41,11 +41,14 @@ export function parseDatetime(date) {
 	if (date !== null) {
 		let myDate = new Date(date);
 		let newDate = numberFormat(myDate.getDate()) + '/' + numberFormat(myDate.getMonth() + 1) + '/' + myDate.getFullYear(); // DD MM AAAA
-		return newDate;
+		let newTime = numberFormat(myDate.getHours()) + ':' + numberFormat(myDate.getMinutes());
+		return newDate + ' ' + newTime;
+
 	} else {
 		return '-'
 	}
 }
+
 
 function numberFormat(x = 0) {
 	return ("0" + x).slice(-2);
