@@ -2,11 +2,10 @@ export function parseMoney(x, hasCents = true) {
 	return '$ ' + parseThousands(x, hasCents);
 }
 
-export function parseTotalMoney(x, hasCents = true) {
-	if(x > 0) 
+export function parseBalanceMoney(prevBalance,actualBalance,x, hasCents = true) {
+	if(actualBalance > prevBalance) 
 		return '$ ' + parseThousands(x, hasCents);
-	else{
-		x = Math.abs(x);	
+	else{	
 		return '$ (' +parseThousands(x, hasCents)+')';
 	}
 }
