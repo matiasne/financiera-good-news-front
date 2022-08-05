@@ -5,7 +5,9 @@ export const styles = StyleSheet.create({
 	// VIEWS
 	page: {
 		flexDirection: 'column',
-		padding: 10,
+		padding: 0,
+		paddingLeft:5,
+		paddingRight:5,
 		paddingTop: 15,
 		paddingBottom: 15,
 	},
@@ -72,16 +74,16 @@ export const styles = StyleSheet.create({
 		marginTop: 10,
 	},
 	tr: {
-		width: '90%',
 		flexDirection: "row",
 		alignItems: "center",
 		borderBottomWidth: 1,
 		borderBottomColor: '#ddd',
 		borderBottomStyle: 'solid',
-		marginBottom: 4,
-		paddingBottom: 4,
+		marginBottom: 14,
+		paddingBottom: 14,
 	},
 	th: {
+		width: "18%",
 
 		fontFamily: 'Open Sans',
 		fontWeight: 'bold',
@@ -89,25 +91,9 @@ export const styles = StyleSheet.create({
 		color: '#787878',
 		paddingHorizontal: 2,
 	},
-	thConcept:{
-		width: '20%',
-		fontFamily: 'Open Sans',
-		fontWeight: 'bold',
-		fontSize: 8,
-		color: '#787878',
-		paddingHorizontal: 2,
-	},
-	tdConcept:{
-		textOverflow: 'ellipsis',
-		width: '20%',
-		fontFamily: 'Open Sans',
-		fontWeight: 'bold',
-		fontSize: 8,
-		color: '#787878',
-		paddingHorizontal: 2,
-	},
 	thID: {
-		width: '5%',
+		width: "8%",
+
 		fontFamily: 'Open Sans',
 		fontWeight: 'bold',
 		fontSize: 8,
@@ -115,15 +101,8 @@ export const styles = StyleSheet.create({
 		paddingHorizontal: 2,
 	},
 	thSM: {
-		width: '10%',
-		fontFamily: 'Open Sans',
-		fontWeight: 'bold',
-		fontSize: 8,
-		color: '#787878',
-		paddingHorizontal: 2,
-	},
-	tdSM: {
-		width: '10%',
+		width: "10%",
+
 		fontFamily: 'Open Sans',
 		fontWeight: 'bold',
 		fontSize: 8,
@@ -131,38 +110,26 @@ export const styles = StyleSheet.create({
 		paddingHorizontal: 2,
 	},
 	thMONEY: {
-		width: '15%',
+		width: "18%",
+
 		fontFamily: 'Open Sans',
 		fontWeight: 'bold',
 		fontSize: 8,
 		color: '#787878',
 		textAlign: 'right',
-		paddingHorizontal: 4,
-	},
-	tdMONEY: {
-		width: '15%',
-		fontFamily: 'Open Sans',
-		fontWeight: 'bold',
-		fontSize: 8,
-		color: '#787878',
-		textAlign: 'right',
-		paddingHorizontal: 4,
+		paddingHorizontal: 2,
 	},
 	td: {
+		width: "18%",
+
 		fontFamily: 'Open Sans',
 		fontSize: 8,
 		color: '#787878',
 		paddingHorizontal: 2,
 	},
-	thDate: {
-		width: '15%',
-		fontFamily: 'Open Sans',
-		fontSize: 8,
-		color: '#787878',
-		paddingHorizontal: 2,
-	},
-	tdDate: {
-		width: '15%',
+	tdSM: {
+		width: "8%",
+
 		fontFamily: 'Open Sans',
 		fontSize: 8,
 		color: '#787878',
