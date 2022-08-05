@@ -183,7 +183,7 @@ const ItemsTable = ({ data, entity }) => {
 		</View>
 		<View style={styles.totales} key={'totales3'}>
 			<Text style={styles.tdTotal}>Total Cliente Excluyendo Cupones Pendientes</Text>
-			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance - cuponesPendientes - entity.pendingBalance)}</Text>
+			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance -  entity.pendingBalance)}</Text>
 		</View>
 	</View>
 };
