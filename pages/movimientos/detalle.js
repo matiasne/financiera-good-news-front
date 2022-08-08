@@ -9,7 +9,7 @@ import Table from '@/components/base/Table'
 import MainLayout from '@/components/layout/MainLayout'
 import axios from 'axios'
 import classNames from 'classnames'
-import { useFormik } from 'formik'
+import { Form, useFormik } from 'formik'
 import { useSession } from 'next-auth/client'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
@@ -27,6 +27,18 @@ import { Font } from '@react-pdf/renderer'
 
 // import OSR from '@/styles/fonts/OpenSans-Regular.ttf'
 
+const TransactionStatusTypes = {
+	INGRESADO : "INGRESADO",
+
+	PENDIENTE_DE_ACREDITACION : "PENDIENTE_DE_ACREDITACION",	
+	CUIT_INCORRECTO : "CUIT_INCORRECTO",
+
+	CONFIRMADO : "CONFIRMADO",		
+	RECHAZADO : "RECHAZADO",
+
+	ERROR_DE_CARGA : "ERROR_DE_CARGA",	
+	NULL : "NULL",
+}
 
 Font.register({
 	family: 'Open Sans',
@@ -42,11 +54,17 @@ const MyPage = ({ session }) => {
 	const [urlData, setUrlData] = useState({});
 	const [entity, setEntity] = useState({});
 
+	const [movementsConfirmadosIngresados, setMovementsConfirmadosIngresados] = useState([]);
+	const [movementsPendings, setMovementsPendigs] = useState([]);
+	const [montoTotalCuponesPendientes,setMontoTotalCuponesPendientes] = useState(0);
+	const [saldoAnterior,setSaldoAnterior] = useState(0);
+
 	const mutationGetC = useMutation((personId) => {
 		return axios(getQueryFullData('clientGet', personId, session))
 	}, {
-		onSuccess: (data) => {
-			setEntity(data.data);
+		onSuccess: (response) => {
+			console.log(response)
+			setEntity(response.data);
 		},
 		onError: (err) => {
 			console.log(err);
@@ -65,12 +83,63 @@ const MyPage = ({ session }) => {
 	})
 
 
+	const mutationGetMovementsConfirmadosIngresados = useMutation((personId) => {
+		return axios(getQueryFullData('movimientoSearch', 
+		{
+			sort: 'id',
+			order: 'asc',
+			from:filters.from,
+			to:filters.to,
+			status: [TransactionStatusTypes.CONFIRMADO,TransactionStatusTypes.INGRESADO],
+			personId: router.query?.personId || null,
+		}
+		, session))
+	}, {
+		onSuccess: (response) => {
+			setMovementsConfirmadosIngresados(response.data.data);
+			setSaldoAnterior(response.data.data[0]?.balance);
+		},
+		onError: (err) => {
+			console.log(err);
+		}
+	})
+
+
+	const mutationGetMovementsPendientes = useMutation((personId) => {
+		return axios(getQueryFullData('movimientoSearch', 
+		{
+			sort: 'id',
+			order: 'asc',
+			from:filters.from,
+			to:filters.to, //tiene que tener 23:59:59
+			status: [TransactionStatusTypes.CUIT_INCORRECTO,TransactionStatusTypes.PENDIENTE_DE_ACREDITACION],
+			personId: router.query?.personId || null,
+		}
+		, session))
+	}, {
+		onSuccess: (response) => {
+			response.data.data.map(item => { 
+				setMontoTotalCuponesPendientes(montoTotalCuponesPendientes + item.total);
+			})
+			setMovementsPendigs(response.data.data);
+		},
+		onError: (err) => {
+			console.log(err);
+		}
+	})
+
+	useEffect(() => {
+		setSaldoAnterior(entity?.pendingBalance+movementsConfirmadosIngresados[0]?.prevBalance);
+	} ,[entity,movementsConfirmadosIngresados])
 	
 
 	useEffect(() => {
 		
 		if (router.isReady) {
 			
+			mutationGetMovementsConfirmadosIngresados.mutate();
+			mutationGetMovementsPendientes.mutate();
+
 			if (router.query?.personType === "Cliente")
 				mutationGetC.mutate(router.query?.personId);
 			
@@ -78,7 +147,6 @@ const MyPage = ({ session }) => {
 			if (router.query?.personType === "Proveedor")
 				mutationGetP.mutate(router.query?.personId);
 
-			console.log(entity)
 			setFilters({
 				personId: router.query?.personId,
 				from: router.query?.from,
@@ -89,6 +157,8 @@ const MyPage = ({ session }) => {
 				personType: router.query?.personType,
 				personName: router.query?.personName,
 			})
+
+			
 		}
 	}, [router])
 
@@ -105,46 +175,36 @@ const MyPage = ({ session }) => {
 
 	return (
 		<>
-			<QueryContent id={"movimientoSearch"} session={session}
-				queryData={{
-					size: 100,
-					sort: 'id',
-					order: 'asc',
-					...filters
-				}}
-				content={(data) => {
-					return <div className='w-full h-full absolute'>
-						<PDFViewer style={{ height: '100%', width: '100%' }}>
-							<Document title={"Financiera Good News - Movimientos"}>
-								<Page size="A4" style={styles.page}>
-									<View style={styles.container}>
-										<View style={styles.col}>
-											<Text style={styles.title}>Detalle de Movimientos</Text>
-											{urlData.personId && <Text style={styles.cardP}>{urlData.personType}: {urlData.personName}</Text>}
-										</View>
-									</View>
-									<View style={styles.containerHead}>
-										<View style={styles.col}>
-											<Text style={styles.cardP}>{urlData.personType}:{urlData.personName}</Text>
-										</View>
-										<View style={styles.col}>
-											<Text style={styles.cardP}>Fecha: {fechaShow}</Text>
-										</View>
-										<View style={styles.col}>
-											<Text style={styles.cardP}>Saldo Ant.: {parseMoney(data.data[0]?.prevBalance)}</Text>
-										</View>
-									</View>
-									<TableHeader />
-									<ItemsTable data={data} entity={entity}/>
-								</Page>
-							</Document>
+			<div className='w-full h-full absolute'>
+				<PDFViewer style={{ height: '100%', width: '100%' }}>
+					<Document title={"Financiera Good News - Movimientos"}>
+						<Page size="A4" style={styles.page}>
+							<View style={styles.container}>
+								<View style={styles.col}>
+									<Text style={styles.title}>Detalle de Movimientos</Text>
+									{urlData.personId && <Text style={styles.cardP}>{urlData.personType}: {urlData.personName}</Text>}
+								</View>
+							</View>
+							<View style={styles.containerHead}>
+								<View style={styles.col}>
+									<Text style={styles.cardP}>{urlData.personType}:{urlData.personName}</Text>
+								</View>
+								<View style={styles.col}>
+									<Text style={styles.cardP}>Fecha: {fechaShow}</Text>
+								</View>
+								<View style={styles.col}>
+									<Text style={styles.cardP}>Saldo Ant.: {parseMoney(saldoAnterior)}</Text>
+								</View>
+							</View>
+							
+							<TableMovimientos data={movementsConfirmadosIngresados} entity={entity}/>
+							<TableMovimientos data={movementsPendings} entity={entity}/>
+							<FooterTotals lastMovement={movementsConfirmadosIngresados[movementsConfirmadosIngresados.length - 1]} entity={entity} />
+						</Page>
+					</Document>
 
-						</PDFViewer>
-					</div>
-				}}
-			/>
-
-			
+				</PDFViewer>
+			</div>			
 		</>
 	);
 }
@@ -156,40 +216,34 @@ MyPage.layoutProps = {
 }
 export default MyPage
 
-
-
-
-const ItemsTable = ({ data, entity }) => {
-
-	let cuponesPendientes = 0;
-	data.data.map(item => {
-		if (item.transactionStatus === 'PENDIENTE_DE_ACREDITACION' || item.transactionStatus === 'CUIT_INCORRECTO') cuponesPendientes += item.total;
-	})
-
+const FooterTotals = ({lastMovement, entity}) => {
 	return <View style={styles.tableContainer}>
-		
-		<Line />
-		<TableRow items={data.data} />
-		{/*<TableFooter items={data.items} />*/}
-
 		<View style={styles.totales} key={'totales0'}></View>
 		<View style={styles.totales} key={'totales1'}>
 			<Text style={styles.tdTotal}>Saldo Pendiente</Text>
-			<Text style={styles.thMONEY}>{parseMoney(entity.pendingBalance)}</Text>
+			<Text style={styles.thMONEY}>{parseMoney(entity?.pendingBalance)}</Text>
 		</View>		
 		<View style={styles.totales} key={'totales2'}>
 			<Text style={styles.tdTotal}>Total Cliente Cuenta Corriente en Pesos</Text>
-			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance)}</Text>
+			<Text style={styles.thMONEY}>{parseMoney(lastMovement?.balance)}</Text>
 		</View>
 		<View style={styles.totales} key={'totales3'}>
 			<Text style={styles.tdTotal}>Total Cliente Excluyendo Cupones Pendientes</Text>
-			<Text style={styles.thMONEY}>{parseMoney(data.data[data.data.length - 1]?.balance -  entity.pendingBalance)}</Text>
-		</View>
+			<Text style={styles.thMONEY}>{parseMoney(lastMovement?.balance -  entity?.pendingBalance)}</Text>
+		</View>	
 	</View>
+}
+
+const TableMovimientos = ({ data, entity }) => {		
+	return data.length?<View style={styles.tableContainer}>
+				<TableHeader />		
+				<Line />
+				<TableRow items={data} />		
+			</View>:null
 };
 
 const TableRow = ({ items }) => {
-	const rows = items.map((item) => (
+	const rows = items?.map((item) => (	
 		<View style={styles.tr} key={item.id.toString()}>
 			<Text style={styles.thID}>{item.id}</Text>
 			<Text style={styles.tdDate}>{parseDate(item.createdAt)}</Text>
@@ -204,7 +258,7 @@ const TableRow = ({ items }) => {
 	return <>{rows}</>;
 };
 
-const TableHeader = ({ items }) => {
+const TableHeader = () => {
 	return <View style={styles.tr} key={"header"}>
 		<Text style={styles.thID}>ID</Text>
 		<Text style={styles.thDate}>Fecha</Text>
