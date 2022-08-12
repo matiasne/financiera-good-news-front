@@ -57,12 +57,11 @@ const MyPage = ({ session }) => {
 	const [urlData, setUrlData] = useState({});
 	const [entity, setEntity] = useState({});
 
-	const [movementsConfirmadosIngresados, setMovementsConfirmadosIngresados] = useState([]);
-	const [movementsRetirosYPagos, setMovementsRetirosYPagos] = useState([]);
-	const [movementsPendings, setMovementsPendigs] = useState([]);
-	const [montoTotalPendientes,setMontoTotalPendientes] = useState(0);
-	const [ultimoBalanceConfirmados,setUltimoBalanceConfirmados] = useState(0);
-	const [balanceAnterior,setBalanceAnterior] = useState(0);
+	const [movements, setMovements] = useState([]);
+	const [saldoPendiente, setSaldoPendiente] = useState(0);
+	const [balanceFinal, setBalanceFinal] = useState(0);
+
+	const [balanceInicial,setBalanceInicial] = useState(0);
 
 	const mutationGetC = useMutation((personId) => {
 		return axios(getQueryFullData('clientGet', personId, session))
@@ -88,9 +87,7 @@ const MyPage = ({ session }) => {
 	})
 
 
-	const mutationGetMovements = useMutation((personId) => {
-		console.log(filters)
-		return axios(getQueryFullData('movimientoSearch', 
+	const getMovements = axios(getQueryFullData('movimientoSearch', 
 		{
 			sort: 'id',
 			order: 'asc',
@@ -98,107 +95,102 @@ const MyPage = ({ session }) => {
 			to:filters.to,
 			status: [TransactionStatusTypes.CONFIRMADO,TransactionStatusTypes.INGRESADO],
 			personId: router.query?.personId || null,
-		}
-		, session))
-	}, {
-		onSuccess: (response) => {
-			let movements = response.data.data;
-			let lastMovement = movementsConfirmadosIngresados[movementsConfirmadosIngresados.length - 1];
+		}, session))
+	
 
-			setMovementsConfirmadosIngresados(movements);
-
-			setUltimoBalanceConfirmados(lastMovement?lastMovement.balance:0);
-
-			mutationGetMovementsRetirosYPagos.mutate();
-		},
-		onError: (err) => {
-			console.log(err);
-		}
-	})
-
-	const mutationGetMovementsRetirosYPagos = useMutation((personId) => {
-		return axios(getQueryFullData('movimientoSearch', 
+	const getMovementsRetirosYPagos =  axios(getQueryFullData('movimientoSearch', 
 		{
 			sort: 'id',
 			order: 'asc',
 			status: [TransactionStatusTypes.PAYMENT,TransactionStatusTypes.PROVIDER_CASH_DELIVERY],
 			personId: router.query?.personId || null,
-		}
-		, session))
-	}, {
-		onSuccess: (response) => {
+		}, session))
 
-			let movements = response.data.data;
-			let lastMovement = movementsConfirmadosIngresados[movementsConfirmadosIngresados.length - 1];
-			let ultimoBalance = lastMovement.balance + lastMovement.pendingBalance;
+	const getMovementsErrorDeCarga =axios(getQueryFullData('movimientoSearch', 
+		{
+			sort: 'id',
+			order: 'asc',
+			status: [TransactionStatusTypes.ERROR_DE_CARGA],
+			personId: router.query?.personId || null,
+		}, session))
+	
 
-			for(let i=0;i < movements.length;i++) {
-				movements[i].parcialBalance = ultimoBalance - movements[i].prevBalance + movements[i].balance
-				ultimoBalance = movements[i].parcialBalance;
-			}
-			setMovementsRetirosYPagos(movements);
-			mutationGetMovementsPendientes.mutate();
-		},
-		onError: (err) => {
-			console.log(err);
-		}
-	})
-
-
-	const mutationGetMovementsPendientes = useMutation((personId) => {
-		return axios(getQueryFullData('movimientoSearch', 
+	const getMovementsPendientes = axios(getQueryFullData('movimientoSearch', 
 		{
 			sort: 'id',
 			order: 'asc',
 			status: [TransactionStatusTypes.CUIT_INCORRECTO,TransactionStatusTypes.PENDIENTE_DE_ACREDITACION],
 			personId: router.query?.personId || null,
-		}
-		, session))
-	}, {
-		onSuccess: (response) => {
-			let movements = response.data.data;
-			let lastMovement = 0;
-
-			if(movementsRetirosYPagos.length > 0) 
-				lastMovement = movementsRetirosYPagos[movementsRetirosYPagos.length - 1];			
-			else if(movementsConfirmadosIngresados.length > 0)
-				lastMovement = movementsConfirmadosIngresados[movementsConfirmadosIngresados.length - 1];
-
-			let ultimoBalance = lastMovement.balance + lastMovement.pendingBalance;
-			let montoTotal = 0
-			
-			for (let i=0;i < movements.length; i++) {
-				movements[i].parcialBalance = ultimoBalance - movements[i].prevBalance + movements[i].balance
-				ultimoBalance = movements[i].parcialBalance;
-				montoTotal = montoTotal + movements[i].total;
-			}
-
-			setMontoTotalPendientes(montoTotal);			
-			setMovementsPendigs(movements);
-		},
-		onError: (err) => {
-			console.log(err);
-		}
-	})
-
+		}, session))
 
 	useEffect(() => {
+		if(filters.from){	
 
-		if(filters.from){
-			mutationGetMovements.mutate();			
-		}	
+			axios.all([getMovements,getMovementsRetirosYPagos,getMovementsErrorDeCarga,getMovementsPendientes]).then(axios.spread((...responses)=>{
+				let movements = [];
+				let confirmados = responses[0].data.data;
+				let salidas = responses[1].data.data;
+				let errorCarga = responses[2].data.data;
+				let pendientes =responses[3].data.data;					
 
+				let balanceInicial = confirmados[0]?.prevBalance + confirmados[0]?.pendingBalance;
+				setBalanceInicial(balanceInicial);
+
+				let found = false;
+				let balance = balanceInicial;
+				for(let i=0;i < confirmados.length;i++) {
+					found = errorCarga.find(x => x.transactionId === confirmados[i].transactionId);
+					
+					if(!found){
+						found = confirmados.find(x=>confirmados[i].id != x.id && x.transactionId === confirmados[i].transactionId && x.status == TransactionStatusTypes.INGRESADO)
+						if(!found){
+							confirmados[i].balance = balance  + (confirmados[i].total * (100-confirmados[i].fee)/100)
+							balance = confirmados[i].balance;
+							found = errorCarga.find(x => x.transactionId === confirmados[i].transactionId);
+							movements.push(confirmados[i]);
+						}
+						
+					}
+					
+				}			
+
+				for(let i=0;i < salidas.length;i++) {
+					salidas[i].balance = balance - (salidas[i].total * (100-salidas[i].fee)/100)
+					balance = salidas[i].balance;
+					movements.push(salidas[i]);
+				}			
+
+				let saldoPendiente = 0
+				
+				for (let i=0;i < pendientes.length; i++) {
+					pendientes[i].balance = balance - (pendientes[i].total * (100-pendientes[i].fee)/100) 
+					balance = pendientes[i].balance;
+					movements.push(pendientes[i]);
+					saldoPendiente = saldoPendiente + (pendientes[i].total * (100-pendientes[i].fee)/100);
+				}
+				setSaldoPendiente(saldoPendiente);	
+				
+				for(let i=0;i < errorCarga.length;i++) {
+					found = confirmados.find(x => x.transactionId === errorCarga[i].transactionId);
+					if(!found){
+						errorCarga[i].balance = balance - (errorCarga[i].total * (100-errorCarga[i].fee)/100)
+						balance = errorCarga[i].balance;
+						movements.push(errorCarga[i]);
+					}					
+				}
+				
+				setMovements(movements);
+				setBalanceFinal(movements[movements.length - 1].balance)
+			}))	
+
+
+		}
 	},[filters])
 
-	useEffect(() => {
-		setBalanceAnterior(movementsConfirmadosIngresados[0]?.pendingBalance + movementsConfirmadosIngresados[0]?.prevBalance);
-	} ,[movementsConfirmadosIngresados])
 	
-
 	useEffect(() => {
 		
-		if (router.isReady) {
-			
+		if (router.isReady) {	
 			
 
 			if (router.query?.personType === "Cliente")
@@ -254,14 +246,13 @@ const MyPage = ({ session }) => {
 									<Text style={styles.cardP}>Fecha: {fechaShow}</Text>
 								</View>
 								<View style={styles.col}>
-									<Text style={styles.cardP}>Saldo Ant.: {parseMoney(balanceAnterior)}</Text>
+									<Text style={styles.cardP}>Saldo Ant.: {parseMoney(balanceInicial)}</Text>
 								</View>
 							</View>
 							
-							<TableMovimientosConfirmados balanceAnterior={balanceAnterior} data={movementsConfirmadosIngresados} entity={entity}/>
-							<TableMovimientosPendientes data={movementsRetirosYPagos} entity={entity}/>
-							<TableMovimientosPendientes data={movementsPendings} entity={entity}/>
-							<FooterTotals montoTotalPendientes={montoTotalPendientes} ultimoBalanceConfirmados={ultimoBalanceConfirmados} entity={entity} />
+							<TableMovimientos data={movements} entity={entity}/>
+							
+							<FooterTotals saldoPendiente={saldoPendiente} balanceFinal={balanceFinal}  />
 						</Page>
 					</Document>
 
@@ -278,33 +269,33 @@ MyPage.layoutProps = {
 }
 export default MyPage
 
-const FooterTotals = ({montoTotalPendientes, ultimoBalanceConfirmados,entity}) => {
+const FooterTotals = ({saldoPendiente, balanceFinal}) => {
 	return <View style={styles.tableContainer}>
 		<View style={styles.totales} key={'totales0'}></View>
 		<View style={styles.totales} key={'totales1'}>
 			<Text style={styles.tdTotal}>Saldo Pendiente</Text>
-			<Text style={styles.thMONEY}>{parseMoney(montoTotalPendientes)}</Text>
+			<Text style={styles.thMONEY}>{parseMoney(saldoPendiente)}</Text>
 		</View>		
 		<View style={styles.totales} key={'totales2'}>
 			<Text style={styles.tdTotal}>Total Cliente Cuenta Corriente en Pesos</Text>
-			<Text style={styles.thMONEY}>{parseMoney(montoTotalPendientes + ultimoBalanceConfirmados)}</Text>
+			<Text style={styles.thMONEY}>{parseMoney(saldoPendiente + balanceFinal)}</Text>
 		</View>
 		<View style={styles.totales} key={'totales3'}>
 			<Text style={styles.tdTotal}>Total Cliente Excluyendo Cupones Pendientes</Text>
-			<Text style={styles.thMONEY}>{parseMoney(entity?.balance -  montoTotalPendientes)}</Text>
+			<Text style={styles.thMONEY}>{parseMoney(balanceFinal)}</Text>
 		</View>	
 	</View>
 }
 
-const TableMovimientosConfirmados = ({ data}) => {		
+const TableMovimientos = ({ data}) => {		
 	return data.length?<View style={styles.tableContainer}>
 				<TableHeader />		
 				<Line />
-				<TableRowConfirmado items={data} />		
+				<TableRow items={data} />		
 			</View>:null
 };
 
-const TableRowConfirmado = ({ items }) => {
+const TableRow = ({ items }) => {
 	const rows = items?.map((item,i) => (	
 		<View style={styles.tr} key={item.id.toString()}>
 			<Text style={styles.thID}>{item.id}</Text>
@@ -312,40 +303,15 @@ const TableRowConfirmado = ({ items }) => {
 			<Text style={styles.tdConcept}>{item.concept}</Text>
 			<Text style={styles.tdSM}>{item.personName}</Text>
 			<Text style={styles.thMONEY}>{parseMoney(item.total)}</Text>
-			<Text style={styles.thMONEY}>{parseMoney(item.balance - item.prevBalance )}</Text>
+			<Text style={styles.thMONEY}>{parseMoney(item.total * (100-item.fee)/100)}</Text>
 			{/* <Text style={styles.thMONEY}>{parseMoney(item.prevBalance)}</Text> */}
-			<Text style={styles.thMONEY}>{parseMoney(item.balance + item.pendingBalance)}</Text>
+			<Text style={styles.thMONEY}>{parseMoney(item.balance)}</Text>
 		</View>
 	));
 	return <>{rows}</>;
 };
 
 
-const TableMovimientosPendientes = ({ data, entity }) => {		
-	return data.length?<View style={styles.tableContainer}>
-				<TableHeader />		
-				<Line />
-				<TableRowPendiente  items={data} />		
-			</View>:null
-};
-
-const TableRowPendiente = ({items }) => {
-
-	const rows = items?.map((item,i) => (	
-		
-		<View style={styles.tr} key={item.id.toString()}>
-			<Text style={styles.thID}>{item.id}</Text>
-			<Text style={styles.tdDate}>{parseDate(item.createdAt)}</Text>
-			<Text style={styles.tdConcept}>{item.concept}</Text>
-			<Text style={styles.tdSM}>{item.personName}</Text>
-			<Text style={styles.thMONEY}>{parseMoney(item.total)}</Text>
-			<Text style={styles.thMONEY}>({parseMoney(item.prevBalance - item.balance)})</Text>
-			{/* <Text style={styles.thMONEY}>{parseMoney(item.prevBalance)}</Text> */}
-			<Text style={styles.thMONEY}>{parseMoney(item.parcialBalance)}</Text>
-		</View>
-	));
-	return <>{rows}</>;
-};
 
 const TableHeader = () => {
 	return <View style={styles.tr} key={"header"}>
