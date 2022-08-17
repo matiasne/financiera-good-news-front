@@ -140,12 +140,26 @@ export function forceTime(datetime, dayStart = true) {
 	let date = new Date(datetime);
 
 	if (dayStart) {
-		date.setUTCHours(0, 0, 0, 0);
+		date = date.getFullYear() +
+		'-' + pad(date.getMonth() + 1) +
+		'-' + pad(date.getDate()) +
+		'T' + '00' +
+		':' + '00' +
+		':' + '00.000Z';	
 	} else {
-		date.setUTCHours(23, 59, 59, 999);
+		date =  date.getFullYear() +
+		'-' + pad(date.getMonth() + 1) +
+		'-' + pad(date.getDate()) +
+		'T' + '23' +
+		':' + '59' +
+		':' + '59.999Z';
 	}
-	return date.toISOString();
+	return date;
 }
+
+function pad (num) {
+	return (num < 10 ? '0' : '') + num;
+};
 
 export function getToday() {
 

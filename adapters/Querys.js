@@ -109,6 +109,11 @@ const myQueries = {
 		method: 'post',
 		public: false,
 	},
+	movimientoSearchPendientes: {
+		url: process.env.DB_URL + '/movements/search/pendientes',
+		method: 'post',
+		public: false,
+	},
 	transactionSearch: {
 		url: process.env.DB_URL + '/transactions/search',
 		method: 'post',

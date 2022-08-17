@@ -98,7 +98,7 @@ const Page = ({ session }) => {
 			type: 'text',
 			getContent: (e) => {
 				let total = e.total - ((e.total / 100) * e.fee )
-				let value = parseTotalMoney(e.prevBalance,e.balance,total)
+				let value = parseMoney(total)
 				return value;
 			},
 			isSortable: false,
@@ -229,6 +229,7 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 			to: forceTime(form?.to, false),
 			providerAccountId: providersAccounts
 		})
+		console.log(forceTime(form?.from, true))
 	}, [provider, client, providersAccounts, form])
 
 	const mutationGetC = useMutation(formData => {
