@@ -19,12 +19,32 @@ export const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: '#ddd',
 		borderBottomStyle: 'solid',
-		marginBottom: 5,
-		paddingBottom: 5,
+		marginBottom: 3,
+		paddingBottom: 3,
+		fontSize: 5,	
 	},
-	col: {
-		padding: 10,
-		flex: 1
+
+	rowHeader:{	
+		width: 755,	
+		flexDirection: 'row',
+		marginBottom: 0,
+		paddingBottom: 0,
+		fontSize: 5,	
+	},
+
+	
+
+	colLeft: {
+		
+		marginTop:5,
+		flex: 1,
+		alignItems: "left",	
+	},
+
+	colRight:{
+		marginTop:5,
+		flex: 1,
+		alignItems: "right",	
 	},
 
 	// CARDS
@@ -63,24 +83,25 @@ export const styles = StyleSheet.create({
 	},
 	cardP: {
 		fontFamily: 'Open Sans',
-		fontSize: 15,
+		fontSize: 10,
 		color: '#787878'
 	},
 
 	// TABLE
 	tableContainer: {
-		width: 600,
+		width: 535,
 		marginTop: 10,
 	},
+
+
 	totales:{
 		flexDirection: "row",
-		alignItems: "center",
+		alignItems: "left",
 		borderBottomWidth: 1,
 		borderBottomColor: '#ddd',
 		borderBottomStyle: 'solid',
-		marginBottom: 14,
-		marginRight: 60,
-		paddingBottom: 14,
+		marginBottom: 5,
+		paddingBottom: 5,
 	},
 	tr: {
 		flexDirection: "row",
@@ -88,13 +109,11 @@ export const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: '#ddd',
 		borderBottomStyle: 'solid',
-		marginBottom: 14,
-
-		paddingBottom: 14,
+		marginBottom: 5,
+		paddingBottom: 5,
 	},
 	th: {
 		width: "18%",
-
 		fontFamily: 'Open Sans',
 		fontWeight: 'bold',
 		fontSize: 8,
@@ -103,7 +122,6 @@ export const styles = StyleSheet.create({
 	},
 	thID: {
 		width: 30,
-
 		fontFamily: 'Open Sans',
 		fontWeight: 'bold',
 		fontSize: 8,
@@ -111,7 +129,7 @@ export const styles = StyleSheet.create({
 		paddingHorizontal: 2,
 	},
 	thSM: {
-		width: 50,
+		width: 40,
 
 		fontFamily: 'Open Sans',
 		fontWeight: 'bold',
@@ -119,9 +137,15 @@ export const styles = StyleSheet.create({
 		color: '#787878',
 		paddingHorizontal: 2,
 	},
+	tdSM: {
+		width: 40,
+		fontFamily: 'Open Sans',
+		fontSize: 8,
+		color: '#787878',
+		paddingHorizontal: 2,
+	},
 	thMONEY: {
 		width: 90,
-
 		fontFamily: 'Open Sans',
 		fontWeight: 'bold',
 		fontSize: 8,
@@ -131,29 +155,21 @@ export const styles = StyleSheet.create({
 	},
 	td: {
 		width: "18%",
-
 		fontFamily: 'Open Sans',
 		fontSize: 8,
 		color: '#787878',
 		paddingHorizontal: 2,
 	},
-	tdSM: {
-		width: 50,
-
-		fontFamily: 'Open Sans',
-		fontSize: 8,
-		color: '#787878',
-		paddingHorizontal: 2,
-	},
+	
 	thDate: {	
-		width: 70,
+		width: 50,
 		fontFamily: 'Open Sans',
 		fontSize: 8,
 		color: '#787878',
 		paddingHorizontal: 2,
 	},
 	tdDate: {	
-		width: 70,
+		width: 50,
 		fontFamily: 'Open Sans',
 		fontSize: 8,
 		color: '#787878',
@@ -174,8 +190,15 @@ export const styles = StyleSheet.create({
 		paddingHorizontal: 2,
 	},
 	tdTotal: {
-		width: "82%",
-
+		width: 400,
+		fontFamily: 'Open Sans',
+		fontSize: 8,
+		color: '#787878',
+		paddingHorizontal: 2,
+		textAlign: 'right',
+	},
+	tdTotalValue: {
+		width: 100,
 		fontFamily: 'Open Sans',
 		fontSize: 8,
 		color: '#787878',

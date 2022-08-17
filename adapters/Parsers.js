@@ -2,14 +2,13 @@ export function parseMoney(x, hasCents = true) {
 	return '$ ' + parseThousands(x, hasCents);
 }
 
-export function parseTotalMoney(prevBalance,actualBalance,x, hasCents = true) {
-	if(actualBalance > prevBalance) 
-		return '$ ' + parseThousands(x, hasCents);
+export function parseTotalMoney(x, hasCents = true) {
+	if(x > 0) 
+		return '$ ' + parseThousands(Math.abs(x), hasCents);
 	else{	
-		return '$ (' +parseThousands(x, hasCents)+')';
+		return '$ (' +parseThousands(Math.abs(x), hasCents)+')';
 	}
 }
-
 
 export function parseThousands(x, hasCents = false) {
 	if (!x) {
