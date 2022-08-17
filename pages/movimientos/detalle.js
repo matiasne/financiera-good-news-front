@@ -117,8 +117,8 @@ const MyPage = ({ session }) => {
       {
         sort: "id",
         order: "asc",
-        from: filters.from,
-        to: filters.to,
+        from: router.query?.from,
+        to: router.query?.to,
         status: [TransactionStatusTypes.INGRESADO],
         personId: router.query?.personId || null,
       },
@@ -126,14 +126,17 @@ const MyPage = ({ session }) => {
     )
   );
 
+ 
+  
+
   const getMovementsRetirosYPagos = axios(
     getQueryFullData(
       "movimientoSearch",
       {
         sort: "id",
         order: "asc",
-        from: filters.from,
-        to: filters.to,
+        from: router.query?.from,
+        to: router.query?.to,
         status: [
           TransactionStatusTypes.PAYMENT,
           TransactionStatusTypes.PROVIDER_CASH_DELIVERY,
@@ -150,8 +153,8 @@ const MyPage = ({ session }) => {
       {
         sort: "id",
         order: "asc",
-        from: filters.from,
-        to: filters.to,
+        from: router.query?.from,
+        to: router.query?.to,
         status: [TransactionStatusTypes.ERROR_DE_CARGA],
         personId: router.query?.personId || null,
       },
@@ -165,20 +168,19 @@ const MyPage = ({ session }) => {
       {
         sort: "id",
         order: "asc",
-        from: filters.from,
-        to: filters.to,
-        status: [
-          TransactionStatusTypes.CUIT_INCORRECTO,
-          TransactionStatusTypes.PENDIENTE_DE_ACREDITACION,
-        ],
+        to: router.query?.to,
         personId: router.query?.personId || null,
+        status:[TransactionStatusTypes.PENDIENTE_DE_ACREDITACION, TransactionStatusTypes.CUIT_INCORRECTO],
+        transactionStatus: [TransactionStatusTypes.PENDIENTE_DE_ACREDITACION, TransactionStatusTypes.CUIT_INCORRECTO],
       },
       session
     )
   );
 
   useEffect(() => {
-    if (filters.from) {
+    
+    if (filters.personId) {
+      console.log(filters)
       axios
         .all([
           getMovements,
@@ -188,6 +190,7 @@ const MyPage = ({ session }) => {
         ])
         .then(
           axios.spread((...responses) => {
+            console.log("axios")
             let movements = [];
             let confirmados = responses[0].data.data;
             let salidas = responses[1].data.data;
@@ -229,8 +232,7 @@ const MyPage = ({ session }) => {
             setMontoTotalDeDeposito(montoTotalDeDeposito);
 
             for (let i = 0; i < salidas.length; i++) {
-              salidas[i].balance =
-                balance - (salidas[i].total * (100 - salidas[i].fee)) / 100;
+              salidas[i].balance = balance - (salidas[i].total * (100 - salidas[i].fee)) / 100;
               balance = salidas[i].balance;
               salidas[i].total = -salidas[i].total;
               movements.push(salidas[i]);
@@ -239,9 +241,7 @@ const MyPage = ({ session }) => {
             let saldoPendiente = 0;
 
             for (let i = 0; i < pendientes.length; i++) {
-              pendientes[i].balance =
-                balance -
-                (pendientes[i].total * (100 - pendientes[i].fee)) / 100;
+              pendientes[i].balance = balance - (pendientes[i].total * (100 - pendientes[i].fee)) / 100;
               balance = pendientes[i].balance;
               saldoPendiente =
                 saldoPendiente +
@@ -268,9 +268,11 @@ const MyPage = ({ session }) => {
           })
         );
     }
+    
   }, [filters]);
 
   useEffect(() => {
+    console.log("router effect")
     if (router.isReady) {
       if (router.query?.personType === "Cliente")
         mutationGetC.mutate(router.query?.personId);
@@ -291,7 +293,7 @@ const MyPage = ({ session }) => {
     }
   }, [router]);
 
-  if (!router || !router.isReady) return <></>;
+  //if (!router || !router.isReady) return <></>;
 
   let fechaShow = "-";
   if (filters.from) {
