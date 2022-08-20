@@ -1,4 +1,4 @@
-import { forceTime, parseDatetime, parseDtype, parseMoney, parseTotalMoney, parseStatus } from '@/adapters/Parsers'
+import { forceTime, parseDatetime, parseDtype, parseMoney, parseTotalMoney, parseStatus, getToday } from '@/adapters/Parsers'
 import QueryContent, { getQueryFullData, QueryAutocomplete,QueryMultipleSelect } from '@/adapters/Querys'
 import Button, { IconButton } from '@/components/base/Buttons'
 import Col, { Container, Row, Rows } from '@/components/base/Grid'
@@ -209,7 +209,7 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 	const [providersAccounts, setProvidersAccounts] = useState([]);
 	const router = useRouter();
 	const [form, setForm] = useState({
-		from: null,
+		from: new Date(),
 		to: null,
 	})
 	const [internalFilters, setInternalFilters] = useState({});

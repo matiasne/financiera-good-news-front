@@ -89,7 +89,6 @@ const Form = ({ session, formData, ...props }) => {
 	})
 
 	useEffect(() => {
-		
 		if (router.isReady && router.query.clienteId) {
 			mutationGet.mutate(router.query.clienteId);
 		}
@@ -162,8 +161,8 @@ const Form = ({ session, formData, ...props }) => {
 															<QueryContent id="depositoSearch" hasPagination={false} session={session}
 																queryData={client ? {
 																	page: 1,
-																	size: 25,
-																	sort: 'createdAt',
+																	size: 10,
+																	sort: 'id',
 																	order: 'desc',
 																	customerId: client.id,
 																	refresh: client.refresh

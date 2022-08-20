@@ -3,10 +3,10 @@ export function parseMoney(x, hasCents = true) {
 }
 
 export function parseTotalMoney(x, hasCents = true) {
-	if(x > 0) 
-		return '$ ' + parseThousands(Math.abs(x), hasCents);
-	else{	
-		return '$ (' +parseThousands(Math.abs(x), hasCents)+')';
+	if(x > 0) { 
+		return '$ ' + parseThousands(x, hasCents);
+	} else {	
+		return '$ (' + parseThousands(Math.abs(x), hasCents) + ')';
 	}
 }
 
@@ -39,7 +39,7 @@ export function parseTitle(str) {
 export function parseDate(date) {
 	if (date !== null) {
 		let myDate = new Date(date);
-		return numberFormat(myDate.getUTCDate()) + '/' + numberFormat(myDate.getUTCMonth() + 1) + '/' + myDate.getUTCFullYear();
+		return numberFormat(myDate.getDate()) + '/' + numberFormat(myDate.getMonth() + 1) + '/' + myDate.getFullYear();
 	} else {
 		return '-'
 	}
@@ -162,10 +162,8 @@ function pad (num) {
 };
 
 export function getToday() {
-
 	let date = new Date();
 	date.setHours(0, 0, 0, 0);
-	console.log(date);
 	return date;
 }
 

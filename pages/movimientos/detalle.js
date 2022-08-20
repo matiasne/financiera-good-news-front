@@ -7,27 +7,13 @@ import {
 } from "@/adapters/Parsers";
 import QueryContent, {
 	getQueryFullData,
-	QueryAutocomplete,
 } from "@/adapters/Querys";
-import Button from "@/components/base/Buttons";
-import Col, { Container, Row, Rows } from "@/components/base/Grid";
-import Input from "@/components/base/Inputs";
-import NoResults from "@/components/base/NoResults";
 import Spinner from "@/components/base/Spinner";
-import Table from "@/components/base/Table";
 import MainLayout from "@/components/layout/MainLayout";
 import axios from "axios";
-import classNames from "classnames";
-import { Form, useFormik } from "formik";
-import { useSession } from "next-auth/client";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { PillSwitcher } from "react-pill-switcher";
 import { useMutation } from "react-query";
-import { CSSTransition, SwitchTransition } from "react-transition-group";
-import Modal from "react-gold-modal";
-import { Card_Persona_Small } from "@/components/Cards";
 
 import { styles } from "@/adapters/PDFStyles";
 import {
@@ -45,18 +31,13 @@ import { Font } from "@react-pdf/renderer";
 
 const TransactionStatusTypes = {
 	INGRESADO: "INGRESADO",
-
 	PENDIENTE_DE_ACREDITACION: "PENDIENTE_DE_ACREDITACION",
 	CUIT_INCORRECTO: "CUIT_INCORRECTO",
-
 	PAYMENT: "PAYMENT",
 	PROVIDER_CASH_DELIVERY: "PROVIDER_CASH_DELIVERY",
-
 	CONFIRMADO: "CONFIRMADO",
 	RECHAZADO: "RECHAZADO",
-
 	ERROR_DE_CARGA: "ERROR_DE_CARGA",
-	NULL: "NULL",
 };
 
 Font.register({
@@ -71,9 +52,7 @@ const MyPage = ({ session }) => {
 	const [pageIsReady, setPageIsReady] = useState(false);
 
 	const router = useRouter();
-	const [filters, setFilters] = useState({});
 	const [urlData, setUrlData] = useState({});
-	const [entity, setEntity] = useState({});
 
 	const [MovementsIngresados, setMovementsIngresados] = useState();
 	const [MovementsRetirosYPagos, setMovementsRetirosYPagos] = useState();
@@ -89,35 +68,6 @@ const MyPage = ({ session }) => {
 	const [cantidadIngresadosConfirmados, setCantidadIngresadosConfirmados] = useState([]);
 	const [montoTotalDeDeposito, setMontoTotalDeDeposito] = useState([]);
 
-	// const mutationGetC = useMutation(
-	// 	(personId) => {
-	// 		return axios(getQueryFullData("clientGet", personId, session));
-	// 	},
-	// 	{
-	// 		onSuccess: (response) => {
-	// 			console.log(response);
-	// 			setEntity(response.data);
-	// 		},
-	// 		onError: (err) => {
-	// 			console.log(err);
-	// 		},
-	// 	}
-	// );
-
-	// const mutationGetP = useMutation(
-	// 	(personId) => {
-	// 		return axios(getQueryFullData("providerGet", personId, session));
-	// 	},
-	// 	{
-	// 		onSuccess: (data) => {
-	// 			setEntity(data.data);
-	// 		},
-	// 		onError: (err) => {
-	// 			console.log(err);
-	// 		},
-	// 	}
-	// );
-
 	const getMovementsIngresados = useMutation(filters => {
 		return axios(getQueryFullData('movimientoSearch', {
 			sort: "id",
@@ -129,7 +79,6 @@ const MyPage = ({ session }) => {
 		}, session))
 	}, {
 		onSuccess: (data) => {
-			console.log(data.data.data);
 			setMovementsIngresados(data.data.data);
 		},
 		onError: (err) => {
@@ -151,7 +100,6 @@ const MyPage = ({ session }) => {
 		}, session))
 	}, {
 		onSuccess: (data) => {
-			console.log(data.data.data);
 			setMovementsRetirosYPagos(data.data.data);
 		},
 		onError: (err) => {
@@ -170,7 +118,6 @@ const MyPage = ({ session }) => {
 		}, session))
 	}, {
 		onSuccess: (data) => {
-			console.log(data.data.data);
 			setMovementsErrorDeCarga(data.data.data);
 		},
 		onError: (err) => {
@@ -188,7 +135,6 @@ const MyPage = ({ session }) => {
 		}, session))
 	}, {
 		onSuccess: (data) => {
-			console.log(data.data.data);
 			setMovementsPendientes(data.data.data);
 		},
 		onError: (err) => {
@@ -207,14 +153,12 @@ const MyPage = ({ session }) => {
 		}, session))
 	}, {
 		onSuccess: (data) => {
-			console.log(data.data.data);
 			setMovementsRechazados(data.data.data);
 		},
 		onError: (err) => {
 			console.log(err);
 		}
 	})
-
 
 	useEffect(() => {
 		// detalle?personId=103&personType=Cliente&personName=Cenitho&providerAccountId=&from=2022-07-01T00%3A00%3A00.000Z&
@@ -244,7 +188,7 @@ const MyPage = ({ session }) => {
 		if (MovementsIngresados && MovementsErrorDeCarga && MovementsPendientes && MovementsRechazados && MovementsRetirosYPagos) {
 			parseData();
 		}
-	}, [MovementsIngresados, MovementsErrorDeCarga, MovementsPendientes, MovementsRechazados, MovementsRetirosYPagos])
+	}, [MovementsIngresados, MovementsErrorDeCarga, MovementsPendientes, MovementsRetirosYPagos, MovementsRechazados])
 
 	useEffect(() => {
 		setPageIsReady(true);
@@ -254,74 +198,70 @@ const MyPage = ({ session }) => {
 		let movements = [];
 		let confirmados = MovementsIngresados;
 		let salidas = MovementsRetirosYPagos;
-		let errorCarga = MovementsErrorDeCarga;
+		let erroresDeCarga = MovementsErrorDeCarga;
 		let pendientes = MovementsPendientes;
+		let rechazados = MovementsRechazados;
 
 		let balanceInicial = confirmados[0]?.prevBalance + confirmados[0]?.pendingBalance;
 		setBalanceInicial(balanceInicial);
 
 		let found = false;
 		let balance = balanceInicial;
+
 		let montoTotalDeDeposito = 0;
 		let countConfirmados = 0;
-		for (let i = 0; i < confirmados.length; i++) {
-			found = errorCarga.find(
-				(x) => x.transactionId === confirmados[i].transactionId
-			);
-
+		confirmados.forEach(confirmado => {
+			found = erroresDeCarga.find((x) => x.transactionId === confirmado.transactionId);
 			if (!found) {
-
-				found = movements.find(
-					(x) =>
-						x.transactionId === confirmados[i].transactionId
-				);
+				found = movements.find((x) => x.transactionId === confirmado.transactionId);
 				if (!found) {
-					confirmados[i].balance = balance + (confirmados[i].total * (100 - confirmados[i].fee)) / 100;
-					balance = confirmados[i].balance;
-					found = errorCarga.find(
-						(x) => x.transactionId === confirmados[i].transactionId
-					);
-					movements.push(confirmados[i]);
-					montoTotalDeDeposito += confirmados[i].total;
+					balance += (confirmado.total * (100 - confirmado.fee)) / 100;
+					confirmado.balance = balance;
+					montoTotalDeDeposito += confirmado.total;
 					countConfirmados++;
+					movements.push(confirmado);
 				}
 			}
-		}
+		});
 		setCantidadIngresadosConfirmados(countConfirmados);
 		setMontoTotalDeDeposito(montoTotalDeDeposito);
 
-		for (let i = 0; i < salidas.length; i++) {
-			salidas[i].balance = balance - (salidas[i].total * (100 - salidas[i].fee)) / 100;
-			balance = salidas[i].balance;
-			salidas[i].total = salidas[i].total * -1;
-			movements.push(salidas[i]);
-		}
+		salidas.forEach(salida => {
+			balance -= (salida.total * (100 - salida.fee)) / 100;
+			salida.balance = balance;
+			salida.total = salida.total * -1;
+			movements.push(salida);
+		});
 
 		let saldoPendiente = 0;
-
-		for (let i = 0; i < pendientes.length; i++) {
-			pendientes[i].balance = balance - (pendientes[i].total * (100 - pendientes[i].fee)) / 100;
-			balance = pendientes[i].balance;
-			saldoPendiente =
-				saldoPendiente +
-				(pendientes[i].total * (100 - pendientes[i].fee)) / 100;
-			pendientes[i].total = pendientes[i].total * -1;
-			movements.push(pendientes[i]);
-		}
+		let total = 0;
+		pendientes.forEach(pendiente => {
+			total = (pendiente.total * (100 - pendiente.fee)) / 100;
+			balance -= total
+			pendiente.balance = balance
+			saldoPendiente += total;
+			pendiente.total = pendiente.total * -1;
+			movements.push(pendiente);
+		});
 		setSaldoPendiente(saldoPendiente);
 
-		for (let i = 0; i < errorCarga.length; i++) {
-			found = confirmados.find(
-				(x) => x.transactionId === errorCarga[i].transactionId
-			);
-			if (!found) {
-				errorCarga[i].balance = balance - (errorCarga[i].total * (100 - errorCarga[i].fee)) / 100;
-				balance = errorCarga[i].balance;
-				errorCarga[i].total = errorCarga[i].total * -1;
-				movements.push(errorCarga[i]);
-			}
-		}
+		rechazados.forEach(rechazado => {
+			balance -= (rechazado.total * (100 - rechazado.fee)) / 100;
+			rechazado.balance = balance;
+			rechazado.total = rechazado.total * -1;
+			movements.push(rechazado);
+		});
 
+		erroresDeCarga.forEach(errorDeCarga => {
+			found = confirmados.find((x) => x.transactionId === errorDeCarga.transactionId);
+			if (!found) {
+				balance -= (errorDeCarga.total * (100 - errorDeCarga.fee)) / 100;
+				errorDeCarga.balance = balance;
+				errorDeCarga.total = errorDeCarga.total * -1;
+				movements.push(errorDeCarga);
+			}
+		});
+		setBalanceFinal(balance)
 		setMovimientos(movements);
 	}
 
@@ -385,7 +325,7 @@ const MyPage = ({ session }) => {
 							</View>
 						</View>
 
-						<TableMovimientos data={movimientos} entity={entity} />
+						<TableMovimientos data={movimientos} />
 
 						<FooterTotals
 							saldoPendiente={saldoPendiente}
@@ -405,29 +345,6 @@ MyPage.layoutProps = {
 };
 export default MyPage;
 
-const FooterTotals = ({ saldoPendiente, balanceFinal }) => {
-	return (
-		<View style={styles.totalesContainer}>
-			<View style={styles.totales} key={"totales3"}>
-				<Text style={styles.tdTotal}>Total Excluyendo Cupones Pendientes</Text>
-				<Text style={styles.tdTotalValue}>{parseMoney(balanceFinal)}</Text>
-			</View>
-			<View style={styles.totales} key={"totales1"}>
-				<Text style={styles.tdTotal}>Saldo Pendiente</Text>
-				<Text style={styles.tdTotalValue}>{parseMoney(saldoPendiente)}</Text>
-			</View>
-			<View style={styles.totales} key={"totales2"}>
-				<Text style={styles.tdTotal}>
-					Total Cliente Cuenta Corriente en Pesos
-				</Text>
-				<Text style={styles.tdTotalValue}>
-					{parseMoney(saldoPendiente + balanceFinal)}
-				</Text>
-			</View>
-		</View>
-	);
-};
-
 const TableMovimientos = ({ data }) => {
 	return data.length ? (
 		<View style={styles.tableContainer}>
@@ -436,24 +353,6 @@ const TableMovimientos = ({ data }) => {
 			<TableRow items={data} />
 		</View>
 	) : null;
-};
-
-const TableRow = ({ items }) => {
-	const rows = items?.map((item, i) => (
-		<View style={styles.tr} key={item.id.toString()}>
-			<Text style={styles.thID}>{item.id}</Text>
-			<Text style={styles.tdDate}>{parseDate(item.createdAt)}</Text>
-			<Text style={styles.tdConcept}>{item.concept}</Text>
-			<Text style={styles.tdSM}>{item.personName}</Text>
-			<Text style={styles.thMONEY}>{parseMoney(Math.abs(item.total))}</Text>
-			<Text style={styles.thMONEY}>
-				{parseTotalMoney((item.total * (100 - item.fee)) / 100)}
-			</Text>
-			{/* <Text style={styles.thMONEY}>{parseMoney(item.prevBalance)}</Text> */}
-			<Text style={styles.thMONEY}>{parseMoney(item.balance)}</Text>
-		</View>
-	));
-	return <>{rows}</>;
 };
 
 const TableHeader = () => {
@@ -471,45 +370,43 @@ const TableHeader = () => {
 	);
 };
 
-// const tableHead = [
-// 	{
-// 		id: 'id',
-// 		label: 'ID',
-// 		type: 'id',
-// 		getContent: (e) => e.id,
-// 	},
-// 	{
-// 		id: 'createdAt',
-// 		label: 'Fecha',
-// 		type: 'id',
-// 		getContent: (e) => parseDatetime(e.createdAt),
-// 	},
-// 	{
-// 		id: 'concept',
-// 		label: 'Concepto',
-// 		type: 'text',
-// 		getContent: (e) => e.concept,
-// 		isSortable: false,
-// 	},
-// 	{
-// 		id: 'personName',
-// 		label: 'Persona',
-// 		type: 'text',
-// 		getContent: (e) => e.personName,
-// 		isSortable: false,
-// 	},
-// 	{
-// 		id: 'total',
-// 		label: 'Monto',
-// 		type: 'money',
-// 		getContent: (e) => e.total,
-// 		isSortable: false,
-// 	},
-// 	{
-// 		id: 'balance',
-// 		label: 'Balance',
-// 		type: 'money',
-// 		getContent: (e) => e.balance,
-// 		isSortable: false,
-// 	},
-// ];
+const TableRow = ({ items }) => {
+	const rows = items?.map((item) => (
+		<View style={styles.tr} key={item.id.toString()}>
+			<Text style={styles.thID}>{item.id}</Text>
+			<Text style={styles.tdDate}>{parseDate(item.createdAt)}</Text>
+			<Text style={styles.tdConcept}>{item.concept}</Text>
+			<Text style={styles.tdSM}>{item.personName}</Text>
+			<Text style={styles.thMONEY}>{parseMoney(Math.abs(item.total))}</Text>
+			<Text style={styles.thMONEY}>
+				{parseTotalMoney((item.total * (100 - item.fee)) / 100)}
+			</Text>
+			{/* <Text style={styles.thMONEY}>{parseMoney(item.prevBalance)}</Text> */}
+			<Text style={styles.thMONEY}>{parseMoney(item.balance)}</Text>
+		</View>
+	));
+	return <>{rows}</>;
+};
+
+const FooterTotals = ({ saldoPendiente, balanceFinal }) => {
+	return (
+		<View style={styles.totalesContainer}>
+			<View style={styles.totales} key={"totales3"}>
+				<Text style={styles.tdTotal}>Total Excluyendo Cupones Pendientes</Text>
+				<Text style={styles.tdTotalValue}>{parseMoney(balanceFinal)}</Text>
+			</View>
+			<View style={styles.totales} key={"totales1"}>
+				<Text style={styles.tdTotal}>Saldo Pendiente</Text>
+				<Text style={styles.tdTotalValue}>{parseMoney(saldoPendiente)}</Text>
+			</View>
+			<View style={styles.totales} key={"totales2"}>
+				<Text style={styles.tdTotal}>
+					Total Cuenta Corriente en Pesos
+				</Text>
+				<Text style={styles.tdTotalValue}>
+					{parseMoney(saldoPendiente + balanceFinal)}
+				</Text>
+			</View>
+		</View>
+	);
+};
