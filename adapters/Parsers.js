@@ -45,6 +45,15 @@ export function parseDate(date) {
 	}
 }
 
+export function parseUTCDate(date) {
+	if (date !== null) {
+		let myDate = new Date(date);
+		return numberFormat(myDate.getUTCDate()) + '/' + numberFormat(myDate.getUTCMonth() + 1) + '/' + myDate.getUTCFullYear();
+	} else {
+		return '-'
+	}
+}
+
 export function parseDatetime(date) {
 	if (date !== null) {
 		let myDate = new Date(date);

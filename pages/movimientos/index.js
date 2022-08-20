@@ -1,5 +1,5 @@
 import { forceTime, parseDatetime, parseDtype, parseMoney, parseTotalMoney, parseStatus, getToday } from '@/adapters/Parsers'
-import QueryContent, { getQueryFullData, QueryAutocomplete,QueryMultipleSelect } from '@/adapters/Querys'
+import QueryContent, { getQueryFullData, QueryAutocomplete, QueryMultipleSelect } from '@/adapters/Querys'
 import Button, { IconButton } from '@/components/base/Buttons'
 import Col, { Container, Row, Rows } from '@/components/base/Grid'
 import Input from '@/components/base/Inputs'
@@ -97,7 +97,7 @@ const Page = ({ session }) => {
 			label: 'Total',
 			type: 'text',
 			getContent: (e) => {
-				let total = e.total - ((e.total / 100) * e.fee )
+				let total = e.total - ((e.total / 100) * e.fee)
 				let value = parseMoney(total)
 				return value;
 			},
@@ -215,6 +215,27 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 	const [internalFilters, setInternalFilters] = useState({});
 
 	useEffect(() => {
+		if (router.query?.clienteId > 0) {
+			mutationGetC.mutate(router.query?.clienteId);
+		} else {
+			setClient(null);
+		}
+
+		if (router.query?.proveedorId > 0) {
+			mutationGetP.mutate(router.query?.proveedorId);
+		} else {
+			setProvider(null);
+		}
+
+		setProvidersAccounts([]);
+
+	}, [router])
+
+	const inputProps = {
+		onChange: (e) => setForm({ ...form, [e.name]: e.value })
+	}
+
+	useEffect(() => {
 		setInternalFilters({
 			personId: provider?.id || client?.id,
 			personType: provider ? 'Proveedor' : 'Cliente',
@@ -232,8 +253,8 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 		console.log(forceTime(form?.from, true))
 	}, [provider, client, providersAccounts, form])
 
-	const mutationGetC = useMutation(formData => {
-		return axios(getQueryFullData('clientGet', formData, session))
+	const mutationGetC = useMutation(id => {
+		return axios(getQueryFullData('clientGet', id, session))
 	}, {
 		onSuccess: (data) => {
 			setClient(data.data);
@@ -243,8 +264,8 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 		}
 	})
 
-	const mutationGetP = useMutation(formData => {
-		return axios(getQueryFullData('providerGet', formData, session))
+	const mutationGetP = useMutation(id => {
+		return axios(getQueryFullData('providerGet', id, session))
 	}, {
 		onSuccess: (data) => {
 			setProvider(data.data);
@@ -254,47 +275,13 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 		}
 	})
 
-	const mutationGetPA = useMutation(formData => {
-		return axios(getQueryFullData('providerAccountGet', formData, session))
-	}, {
-		onSuccess: (data) => {
-		//	setProviderAccount(data.data);
-		},
-		onError: (err) => {
-			console.log(err);
-		}
-	})
-
-	useEffect(() => {
-		if (router.query?.clienteId > 0) {
-			mutationGetC.mutate(router.query?.clienteId);
-		} else {
-			client && setClient(null);
-		}
-
-		if (router.query?.proveedorId > 0) {
-			mutationGetP.mutate(router.query?.proveedorId);
-		} else {
-			provider && setProvider(null);
-		}
-
-		if (router.query?.cuentaProveedorId > 0) {
-			mutationGetPA.mutate(router.query?.cuentaProveedorId);
-		} else {
-			providersAccounts && setProvidersAccounts([]);
-		}
-
-	}, [router])
-
-	const inputProps = {
-		onChange: (e) => setForm({ ...form, [e.name]: e.value })
-	}
-
-	let url = Object.keys(internalFilters).map(function (k) {
-		if (internalFilters[k]) {
-			return encodeURIComponent(k) + '=' + encodeURIComponent(internalFilters[k])
-		}
-	}).join('&');
+	let url = Object.keys(internalFilters)
+		.map(k => {
+			if (internalFilters[k]) {
+				return encodeURIComponent(k) + '=' + encodeURIComponent(internalFilters[k])
+			}
+		})
+		.join('&');
 
 	return (
 		<div className="flex gap-3 justify-between">
@@ -352,24 +339,24 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 							!selection && router.push('?', { shallow: true });
 						}}
 					/>
-				</div>				
+				</div>
 				<div className='w-full'>
 					<QueryMultipleSelect label="Cuenta" id="providerAccountsSearch" session={session}
-							queryData={{
-								sort: 'providerId',
-								order: 'asc',
-							}}
-							value={providersAccounts}
-							getOptionValue={(option) => option.id}
-							getOptionLabel={(option) => option.providerName + ' - '+option.name + ' - #' + option.accountNumber}
-							onSelect={(selection) => {
-								console.log(selection)
-								setProvidersAccounts(selection);								
-								selection && setClient(null) && setProvider(null);
-								//selection && router.push('?cuentaProveedorId=' + selection);
-								!selection && router.push('?', { shallow: true });
-							}}
-						/>
+						queryData={{
+							sort: 'providerId',
+							order: 'asc',
+						}}
+						value={providersAccounts}
+						getOptionValue={(option) => option.id}
+						getOptionLabel={(option) => option.providerName + ' - ' + option.name + ' - #' + option.accountNumber}
+						onSelect={(selection) => {
+							console.log(selection)
+							setProvidersAccounts(selection);
+							selection && setClient(null) && setProvider(null);
+							//selection && router.push('?cuentaProveedorId=' + selection);
+							!selection && router.push('?', { shallow: true });
+						}}
+					/>
 				</div>
 			</div>
 			<div>
@@ -592,7 +579,7 @@ export function MovDetails_queryData() {
 							</Col>
 						</Row>
 					</Rows>
-					{data.ticket.file  ?
+					{data.ticket.file ?
 						<div className="mt-4">
 							{data.ticket.file.indexOf('data:image') > -1 ?
 								<div className="file-iframe"><img src={data.ticket.file} /></div>
