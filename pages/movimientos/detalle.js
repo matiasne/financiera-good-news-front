@@ -133,8 +133,13 @@ const MyPage = ({ session }) => {
 				TransactionStatusTypes.PROVIDER_CASH_DELIVERY].includes(movement.status));
 			let erroresDeCarga = Movements.filter(movement => movement.status === TransactionStatusTypes.ERROR_DE_CARGA);
 			let rechazados = Movements.filter(movement => movement.status === TransactionStatusTypes.RECHAZADO);
-			
-			let prevBalance = movements[0]?.prevBalance;
+
+			let prevBalance = movements[0].prevBalance + movements[0].pendingBalance;
+			if ([TransactionStatusTypes.CUIT_INCORRECTO,
+			TransactionStatusTypes.PENDIENTE_DE_ACREDITACION].includes(movements[0].status)) {
+				prevBalance -= (movements[0].total * (100 - movements[0].fee)) / 100;
+			}
+
 			setBalanceInicial(prevBalance);
 
 			let balance = prevBalance;
