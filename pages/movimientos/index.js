@@ -13,6 +13,10 @@ import { useEffect, useState } from 'react'
 import Modal from 'react-gold-modal'
 import toast from 'react-hot-toast'
 import { useMutation } from 'react-query'
+import JSZip from 'jszip'
+import { dataURLtoFile } from '@/adapters/Parsers'
+import { saveAs } from 'file-saver'
+import Spinner from '@/components/base/Spinner'
 
 
 const Page = ({ session }) => {
@@ -23,6 +27,8 @@ const Page = ({ session }) => {
 
 	const [showFilters, setShowFilters] = useState(false);
 	const [filters, setFilters] = useState({});
+	const [itemsAmount, setItemsAmount] = useState({});
+	
 
 	const mutationDelete = useMutation(formData => {
 		return axios(getQueryFullData('providerDelete', deleteId, session))
@@ -122,7 +128,7 @@ const Page = ({ session }) => {
 
 				<div className="contentSet__shrink">
 					{/* FILTERS */}
-					<AdvancedFilters session={session} onFilter={setFilters} />
+					<AdvancedFilters session={session} onFilter={setFilters} itemsAmount={itemsAmount} />
 				</div>
 
 				<div className="contentSet__scrollable">
@@ -140,6 +146,7 @@ const Page = ({ session }) => {
 							// emptyContent={<NoResults />}
 							content={(data, queryData) => {
 								let items = data.data;
+								setItemsAmount(data.total);
 								return (
 									<Table striped={false} lined={true}
 										tableData={items}
@@ -190,6 +197,7 @@ const Page = ({ session }) => {
 
 			</article>
 
+			
 		</>
 
 	)
@@ -203,7 +211,7 @@ Page.layoutProps = {
 export default Page
 
 // PAGE FILTERS
-function AdvancedFilters({ session, onFilter = () => null }) {
+function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 	const [client, setClient] = useState(null);
 	const [provider, setProvider] = useState(null);
 	const [providersAccounts, setProvidersAccounts] = useState([]);
@@ -213,8 +221,11 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 		to: null,
 	})
 	const [internalFilters, setInternalFilters] = useState({});
+	const [showItemsAmountAlert, setShowItemsAmountAlert] = useState(false);
+	const [showSpinnerTicketDownload, setShowSpinnerTicketDownload] = useState(false);
 
 	useEffect(() => {
+		
 		setInternalFilters({
 			personId: provider?.id || client?.id,
 			personType: provider ? 'Proveedor' : 'Cliente',
@@ -265,6 +276,30 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 		}
 	})
 
+	const mutationGetTickets = useMutation(formData => {
+		setShowSpinnerTicketDownload(true);
+		return axios(getQueryFullData('depositoSearchTickets',formData, session))
+	}, {
+		onSuccess: (data) => {
+			let items = data.data.data;
+			let zip = new JSZip();
+			items.map((item, i) => {
+				console.log(item.cuit+'-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'))
+				if(item.file.indexOf('data') > -1)
+					item.file && zip.file(item.cuit+'-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'),	dataURLtoFile(item.file, 'goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'))
+			)});
+
+			zip.generateAsync({ type: "blob" }).then(function (content) {
+				saveAs(content, "goodnews-comprobantes.zip");
+			});
+			setShowSpinnerTicketDownload(false);
+		},
+		onError: (err) => {
+			setShowSpinnerTicketDownload(false);
+			console.log(err);
+		}
+	})
+
 	useEffect(() => {
 		if (router.query?.clienteId > 0) {
 			mutationGetC.mutate(router.query?.clienteId);
@@ -290,6 +325,23 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 		onChange: (e) => setForm({ ...form, [e.name]: e.value })
 	}
 
+	const dowloandTickets = () => {
+		if(itemsAmount > 100){		
+			setShowItemsAmountAlert(true)
+		}
+		else{
+			console.log(provider?.id)
+			mutationGetTickets.mutate({
+				size: 100,
+				providerId: provider?.id,
+				customerId: client?.id,
+				from: form.from,
+				to: form.to
+			})
+		}
+		
+	}
+
 	let url = Object.keys(internalFilters).map(function (k) {
 		if (internalFilters[k]) {
 			return encodeURIComponent(k) + '=' + encodeURIComponent(internalFilters[k])
@@ -297,6 +349,7 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 	}).join('&');
 
 	return (
+		<>
 		<div className="flex gap-3 justify-between">
 			<div className='flex gap-3 w-full'>
 				<div>
@@ -371,16 +424,46 @@ function AdvancedFilters({ session, onFilter = () => null }) {
 							}}
 						/>
 				</div>
+				
 			</div>
-			<div>
+			<div className='w-40'>
 				<label htmlFor="" className='input__label opacity-0'>-</label>
 				<Link href={"/movimientos/detalle?" + url}>
 					<a>
 						<Button type='success' iconStart='file' className='h-7'>Exportar</Button>
 					</a>
-				</Link>
+				</Link>						
 			</div>
+			<div className='w-60'>
+				<label htmlFor="" className='input__label opacity-0'>-</label>
+				<Button className='btn btn-success w-60 h-7' disabled={showSpinnerTicketDownload} onClick={dowloandTickets}>		
+					{ showSpinnerTicketDownload?<Spinner className="w-4 h-4 z-10" spinnerClassName="w-4 h-4 text-main" />:"Descargar Tickets " }
+				</Button>
+			</div>	
 		</div>
+		<Modal
+				
+				body={
+					"El resultado de movimientos debe contener menos de 100 items"
+				}
+				display={showItemsAmountAlert}
+				cancelIsClose
+				overlayIsCancel
+				options={[
+					{
+						text: 'Aceptar',
+						handler: () => {setShowItemsAmountAlert(false)},
+					}
+				]}
+				cancel={{
+					text: 'Cancelar',
+					handler: () => { setShowItemsAmountAlert(false) }
+				}}				
+			/>
+		</>
+		
+
+		
 	)
 }
 
