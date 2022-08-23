@@ -16,6 +16,8 @@ import { useMutation } from 'react-query'
 import JSZip from 'jszip'
 import { dataURLtoFile } from '@/adapters/Parsers'
 import { saveAs } from 'file-saver'
+import Spinner from '@/components/base/Spinner'
+
 
 const Page = ({ session }) => {
 	const router = useRouter();
@@ -216,8 +218,10 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 	})
 	const [internalFilters, setInternalFilters] = useState({});
 	const [showItemsAmountAlert, setShowItemsAmountAlert] = useState(false);
+	const [showSpinnerTicketDownload, setShowSpinnerTicketDownload] = useState(false);
 
 	useEffect(() => {
+		
 		setInternalFilters({
 			personId: provider?.id || client?.id,
 			personType: provider ? 'Proveedor' : 'Cliente',
@@ -268,26 +272,25 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 	})
 
 	const mutationGetTickets = useMutation(formData => {
-		
+		setShowSpinnerTicketDownload(true);
 		return axios(getQueryFullData('depositoSearchTickets',formData, session))
 	}, {
 		onSuccess: (data) => {
 			let items = data.data.data;
-			console.log(items)
 			let zip = new JSZip();
 			items.map((item, i) => {
-				console.log('goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'))
-
+				console.log(item.cuit+'-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'))
 				if(item.file.indexOf('data') > -1)
-					item.file && zip.file('goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'),	dataURLtoFile(item.file, 'goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'))
-				
+					item.file && zip.file(item.cuit+'-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'),	dataURLtoFile(item.file, 'goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'))
 			)});
 
 			zip.generateAsync({ type: "blob" }).then(function (content) {
 				saveAs(content, "goodnews-comprobantes.zip");
 			});
+			setShowSpinnerTicketDownload(false);
 		},
 		onError: (err) => {
+			setShowSpinnerTicketDownload(false);
 			console.log(err);
 		}
 	})
@@ -431,16 +434,22 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 							}}
 						/>
 				</div>
+				
 			</div>
-			<div>
+			<div className='w-40'>
 				<label htmlFor="" className='input__label opacity-0'>-</label>
 				<Link href={"/movimientos/detalle?" + url}>
 					<a>
 						<Button type='success' iconStart='file' className='h-7'>Exportar</Button>
 					</a>
-				</Link>
-				<Button type='success' iconStart='file' className='h-7' onClick={dowloandTickets}>Descargar Tickets</Button>
+				</Link>						
 			</div>
+			<div className='w-60'>
+				<label htmlFor="" className='input__label opacity-0'>-</label>
+				<Button className='btn btn-success w-60 h-7' disabled={showSpinnerTicketDownload} onClick={dowloandTickets}>		
+					{ showSpinnerTicketDownload?<Spinner className="w-4 h-4 z-10" spinnerClassName="w-4 h-4 text-main" />:"Descargar Tickets " }
+				</Button>
+			</div>	
 		</div>
 		<Modal
 				
