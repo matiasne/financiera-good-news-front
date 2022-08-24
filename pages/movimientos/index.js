@@ -326,7 +326,7 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 	}
 
 	const dowloandTickets = () => {
-		if(itemsAmount > 100){		
+		if(itemsAmount > 1000){		
 			setShowItemsAmountAlert(true)
 		}
 		else{
