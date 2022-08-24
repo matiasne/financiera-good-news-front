@@ -241,9 +241,7 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 
 	}, [router])
 
-	const inputProps = {
-		onChange: (e) => setForm({ ...form, [e.name]: e.value })
-	}
+	
 
 	useEffect(() => {
 		setInternalFilters({
@@ -285,13 +283,7 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 		}
 	})
 
-	let url = Object.keys(internalFilters)
-		.map(k => {
-			if (internalFilters[k]) {
-				return encodeURIComponent(k) + '=' + encodeURIComponent(internalFilters[k])
-			}
-		})
-		.join('&');
+	
 
 	useEffect(() => {
 		if (router.query?.clienteId > 0) {
