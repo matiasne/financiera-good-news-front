@@ -283,6 +283,45 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 		}
 	})
 
+	const mutationGetTickets = useMutation(formData => {
+		setShowSpinnerTicketDownload(true);
+		return axios(getQueryFullData('depositoSearchTickets',formData, session))
+	}, {
+		onSuccess: (data) => {
+			let items = data.data.data;
+			let zip = new JSZip();
+			items.map((item, i) => {
+				if(item.file.indexOf('data') > -1)
+					item.file && zip.file(item.cuit+'-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'),	dataURLtoFile(item.file, 'goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'))
+			)});
+
+			zip.generateAsync({ type: "blob" }).then(function (content) {
+				saveAs(content, "goodnews-comprobantes.zip");
+			});
+			setShowSpinnerTicketDownload(false);
+		},
+		onError: (err) => {
+			setShowSpinnerTicketDownload(false);
+			console.log(err);
+		}
+	})
+
+	const dowloandTickets = () => {
+		if(itemsAmount > 100){		
+			setShowItemsAmountAlert(true)
+		}
+		else{
+			mutationGetTickets.mutate({
+				size: 100,
+				providerId: provider?.id,
+				customerId: client?.id,
+				from: form.from,
+				to: form.to
+			})
+		}
+		
+	}
+
 	
 
 	useEffect(() => {
