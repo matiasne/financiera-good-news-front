@@ -8,8 +8,8 @@ export const styles = StyleSheet.create({
 		padding: 0,
 		paddingLeft:30,
 		paddingRight:30,
-		paddingTop: 50,
-		paddingBottom: 15,
+		paddingTop: 60,
+		paddingBottom: 80,
 	},
 	container: {
 		flexDirection: 'row',
@@ -32,10 +32,7 @@ export const styles = StyleSheet.create({
 		fontSize: 5,	
 	},
 
-	
-
 	colLeft: {
-		
 		marginTop:5,
 		flex: 1,
 		alignItems: "left",	
@@ -92,8 +89,6 @@ export const styles = StyleSheet.create({
 		width: 535,
 		marginTop: 10,
 	},
-
-
 	totales:{
 		flexDirection: "row",
 		alignItems: "left",
@@ -160,7 +155,6 @@ export const styles = StyleSheet.create({
 		color: '#787878',
 		paddingHorizontal: 2,
 	},
-	
 	thDate: {	
 		width: 50,
 		fontFamily: 'Open Sans',
