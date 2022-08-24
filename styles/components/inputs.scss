@@ -432,6 +432,12 @@
 
 	.dropZone__label {
 		@apply p-2 relative w-full h-full;
+		.file-iframe {
+			height: 100%;
+			img {
+				max-height: none !important;
+			}
+		}
 
 		.dropZone__labelzone {
 			@apply bg-main-50 border-dashed border-2 border-main absolute flex items-center justify-center rounded-md;

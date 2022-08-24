@@ -1,5 +1,5 @@
-import { forceTime, parseDatetime, parseDtype, parseMoney, parseTotalMoney, parseStatus } from '@/adapters/Parsers'
-import QueryContent, { getQueryFullData, QueryAutocomplete,QueryMultipleSelect } from '@/adapters/Querys'
+import { forceTime, parseDatetime, parseDtype, parseMoney, parseTotalMoney, parseStatus, getToday } from '@/adapters/Parsers'
+import QueryContent, { getQueryFullData, QueryAutocomplete, QueryMultipleSelect } from '@/adapters/Querys'
 import Button, { IconButton } from '@/components/base/Buttons'
 import Col, { Container, Row, Rows } from '@/components/base/Grid'
 import Input from '@/components/base/Inputs'
@@ -103,7 +103,7 @@ const Page = ({ session }) => {
 			label: 'Total',
 			type: 'text',
 			getContent: (e) => {
-				let total = e.total - ((e.total / 100) * e.fee )
+				let total = e.total - ((e.total / 100) * e.fee)
 				let value = parseMoney(total)
 				return value;
 			},
@@ -217,7 +217,7 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 	const [providersAccounts, setProvidersAccounts] = useState([]);
 	const router = useRouter();
 	const [form, setForm] = useState({
-		from: null,
+		from: new Date(),
 		to: null,
 	})
 	const [internalFilters, setInternalFilters] = useState({});
@@ -225,7 +225,27 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 	const [showSpinnerTicketDownload, setShowSpinnerTicketDownload] = useState(false);
 
 	useEffect(() => {
-		
+		if (router.query?.clienteId > 0) {
+			mutationGetC.mutate(router.query?.clienteId);
+		} else {
+			setClient(null);
+		}
+
+		if (router.query?.proveedorId > 0) {
+			mutationGetP.mutate(router.query?.proveedorId);
+		} else {
+			setProvider(null);
+		}
+
+		setProvidersAccounts([]);
+
+	}, [router])
+
+	const inputProps = {
+		onChange: (e) => setForm({ ...form, [e.name]: e.value })
+	}
+
+	useEffect(() => {
 		setInternalFilters({
 			personId: provider?.id || client?.id,
 			personType: provider ? 'Proveedor' : 'Cliente',
@@ -243,8 +263,8 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 		console.log(forceTime(form?.from, true))
 	}, [provider, client, providersAccounts, form])
 
-	const mutationGetC = useMutation(formData => {
-		return axios(getQueryFullData('clientGet', formData, session))
+	const mutationGetC = useMutation(id => {
+		return axios(getQueryFullData('clientGet', id, session))
 	}, {
 		onSuccess: (data) => {
 			setClient(data.data);
@@ -254,8 +274,8 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 		}
 	})
 
-	const mutationGetP = useMutation(formData => {
-		return axios(getQueryFullData('providerGet', formData, session))
+	const mutationGetP = useMutation(id => {
+		return axios(getQueryFullData('providerGet', id, session))
 	}, {
 		onSuccess: (data) => {
 			setProvider(data.data);
@@ -265,40 +285,13 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 		}
 	})
 
-	const mutationGetPA = useMutation(formData => {
-		return axios(getQueryFullData('providerAccountGet', formData, session))
-	}, {
-		onSuccess: (data) => {
-		//	setProviderAccount(data.data);
-		},
-		onError: (err) => {
-			console.log(err);
-		}
-	})
-
-	const mutationGetTickets = useMutation(formData => {
-		setShowSpinnerTicketDownload(true);
-		return axios(getQueryFullData('depositoSearchTickets',formData, session))
-	}, {
-		onSuccess: (data) => {
-			let items = data.data.data;
-			let zip = new JSZip();
-			items.map((item, i) => {
-				console.log(item.cuit+'-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'))
-				if(item.file.indexOf('data') > -1)
-					item.file && zip.file(item.cuit+'-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'),	dataURLtoFile(item.file, 'goodnews-comprobante-' + item.id + (item.file.indexOf('data:image') > -1 ? '.jpg' : '.pdf'))
-			)});
-
-			zip.generateAsync({ type: "blob" }).then(function (content) {
-				saveAs(content, "goodnews-comprobantes.zip");
-			});
-			setShowSpinnerTicketDownload(false);
-		},
-		onError: (err) => {
-			setShowSpinnerTicketDownload(false);
-			console.log(err);
-		}
-	})
+	let url = Object.keys(internalFilters)
+		.map(k => {
+			if (internalFilters[k]) {
+				return encodeURIComponent(k) + '=' + encodeURIComponent(internalFilters[k])
+			}
+		})
+		.join('&');
 
 	useEffect(() => {
 		if (router.query?.clienteId > 0) {
@@ -323,23 +316,6 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 
 	const inputProps = {
 		onChange: (e) => setForm({ ...form, [e.name]: e.value })
-	}
-
-	const dowloandTickets = () => {
-		if(itemsAmount > 1000){		
-			setShowItemsAmountAlert(true)
-		}
-		else{
-			console.log(provider?.id)
-			mutationGetTickets.mutate({
-				size: 100,
-				providerId: provider?.id,
-				customerId: client?.id,
-				from: form.from,
-				to: form.to
-			})
-		}
-		
 	}
 
 	let url = Object.keys(internalFilters).map(function (k) {
@@ -405,24 +381,24 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
 							!selection && router.push('?', { shallow: true });
 						}}
 					/>
-				</div>				
+				</div>
 				<div className='w-full'>
 					<QueryMultipleSelect label="Cuenta" id="providerAccountsSearch" session={session}
-							queryData={{
-								sort: 'providerId',
-								order: 'asc',
-							}}
-							value={providersAccounts}
-							getOptionValue={(option) => option.id}
-							getOptionLabel={(option) => option.providerName + ' - '+option.name + ' - #' + option.accountNumber}
-							onSelect={(selection) => {
-								console.log(selection)
-								setProvidersAccounts(selection);								
-								selection && setClient(null) && setProvider(null);
-								//selection && router.push('?cuentaProveedorId=' + selection);
-								!selection && router.push('?', { shallow: true });
-							}}
-						/>
+						queryData={{
+							sort: 'providerId',
+							order: 'asc',
+						}}
+						value={providersAccounts}
+						getOptionValue={(option) => option.id}
+						getOptionLabel={(option) => option.providerName + ' - ' + option.name + ' - #' + option.accountNumber}
+						onSelect={(selection) => {
+							console.log(selection)
+							setProvidersAccounts(selection);
+							selection && setClient(null) && setProvider(null);
+							//selection && router.push('?cuentaProveedorId=' + selection);
+							!selection && router.push('?', { shallow: true });
+						}}
+					/>
 				</div>
 				
 			</div>
@@ -675,7 +651,7 @@ export function MovDetails_queryData() {
 							</Col>
 						</Row>
 					</Rows>
-					{data.ticket.file  ?
+					{data.ticket.file ?
 						<div className="mt-4">
 							{data.ticket.file.indexOf('data:image') > -1 ?
 								<div className="file-iframe"><img src={data.ticket.file} /></div>
