@@ -364,6 +364,7 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
         size: 100,
         providerId: provider?.id,
         customerId: client?.id,
+        providerAccountId:providersAccounts,
         from: form.from,
         to: form.to,
       });
