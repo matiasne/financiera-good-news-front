@@ -365,8 +365,8 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
         providerId: provider?.id,
         customerId: client?.id,
         providerAccountId:providersAccounts,
-        from: form.from,
-        to: form.to,
+        from: forceTime(form.from),
+        to: forceTime(form.to),
       });
     }
   };
