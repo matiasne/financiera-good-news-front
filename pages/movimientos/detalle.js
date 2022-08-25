@@ -134,10 +134,22 @@ const MyPage = ({ session }) => {
 			let erroresDeCarga = Movements.filter(movement => movement.status === TransactionStatusTypes.ERROR_DE_CARGA);
 			let rechazados = Movements.filter(movement => movement.status === TransactionStatusTypes.RECHAZADO);
 
-			let prevBalance = movements[0].prevBalance + movements[0].pendingBalance;
-			if ([TransactionStatusTypes.CUIT_INCORRECTO,
-			TransactionStatusTypes.PENDIENTE_DE_ACREDITACION].includes(movements[0].status)) {
-				prevBalance -= (movements[0].total * (100 - movements[0].fee)) / 100;
+			let prevBalance = 0;
+			switch (movements[0].status) {
+				case TransactionStatusTypes.INGRESADO:
+					prevBalance = movements[0].prevBalance + movements[0].pendingBalance
+					break;
+				case TransactionStatusTypes.CONFIRMADO:
+					prevBalance = movements[0].balance + movements[0].pendingBalance
+					break;
+				case TransactionStatusTypes.PENDIENTE_DE_ACREDITACION,
+					TransactionStatusTypes.CUIT_INCORRECTO:
+					prevBalance = movements[0].prevBalance + movements[0].pendingBalance
+						- ((movements[0].total * (100 - movements[0].fee)) / 100);
+					break;
+				default:
+					prevBalance = movements[0].prevBalance + movements[0].pendingBalance
+					break;
 			}
 
 			setBalanceInicial(prevBalance);
