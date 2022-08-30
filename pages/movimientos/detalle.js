@@ -142,8 +142,12 @@ const MyPage = ({ session }) => {
 				case TransactionStatusTypes.CONFIRMADO:
 					prevBalance = movements[0].balance + movements[0].pendingBalance
 					break;
-				case TransactionStatusTypes.PENDIENTE_DE_ACREDITACION,
-					TransactionStatusTypes.CUIT_INCORRECTO:
+				case TransactionStatusTypes.RECHAZADO:
+					prevBalance = movements[0].balance + movements[0].pendingBalance
+						+ ((movements[0].total * (100 - movements[0].fee)) / 100);
+					break;
+				case TransactionStatusTypes.PENDIENTE_DE_ACREDITACION:
+				case TransactionStatusTypes.CUIT_INCORRECTO:
 					prevBalance = movements[0].prevBalance + movements[0].pendingBalance
 						- ((movements[0].total * (100 - movements[0].fee)) / 100);
 					break;
@@ -182,6 +186,13 @@ const MyPage = ({ session }) => {
 				data.push(salida);
 			});
 
+			rechazados.forEach(rechazado => {
+				balance -= (rechazado.total * (100 - rechazado.fee)) / 100;
+				rechazado.balance = balance;
+				rechazado.total = rechazado.total * -1;
+				data.push(rechazado);
+			});
+
 			let saldoPendiente = 0;
 			let total = 0;
 			pendientes.forEach(pendiente => {
@@ -193,13 +204,6 @@ const MyPage = ({ session }) => {
 				data.push(pendiente);
 			});
 			setSaldoPendiente(saldoPendiente);
-
-			rechazados.forEach(rechazado => {
-				balance -= (rechazado.total * (100 - rechazado.fee)) / 100;
-				rechazado.balance = balance;
-				rechazado.total = rechazado.total * -1;
-				data.push(rechazado);
-			});
 
 			erroresDeCarga.forEach(errorDeCarga => {
 				found = confirmados.find((x) => x.transactionId === errorDeCarga.transactionId);
