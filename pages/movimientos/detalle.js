@@ -27,19 +27,10 @@ import {
 } from "@react-pdf/renderer";
 import { PDFViewer } from "@react-pdf/renderer";
 import { Font } from "@react-pdf/renderer";
-
+import {TransactionStatusTypes} from '../models/transactionStatus'
 // import OSR from '@/styles/fonts/OpenSans-Regular.ttf'
 
-const TransactionStatusTypes = {
-	INGRESADO: "INGRESADO",
-	PENDIENTE_DE_ACREDITACION: "PENDIENTE_DE_ACREDITACION",
-	CUIT_INCORRECTO: "CUIT_INCORRECTO",
-	PAYMENT: "PAYMENT",
-	PROVIDER_CASH_DELIVERY: "PROVIDER_CASH_DELIVERY",
-	CONFIRMADO: "CONFIRMADO",
-	RECHAZADO: "RECHAZADO",
-	ERROR_DE_CARGA: "ERROR_DE_CARGA",
-};
+
 
 Font.register({
 	family: "Open Sans",
