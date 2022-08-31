@@ -205,7 +205,7 @@ const Page = ({ session }) => {
             cancel={{
               text: "Cancelar",
               handler: () => {
-                router.push("?", { shallow: true });
+                router.back();
               },
             }}
             body={
@@ -265,10 +265,10 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
       mutationGetP.mutate(router.query?.proveedorId);
     } else {
       setProvider(null);
-    }
 
+    }
     setProvidersAccounts([]);
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     setInternalFilters({
@@ -384,12 +384,20 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
       provider && setProvider(null);
     }
 
-    if (router.query?.cuentaProveedorId > 0) {
+    /*if (router.query?.cuentaProveedorId > 0) {
       mutationGetPA.mutate(router.query?.cuentaProveedorId);
     } else {
       providersAccounts && setProvidersAccounts([]);
-    }
+    }*/
   }, [router]);
+
+  useEffect(()=>{
+    console.log(provider)
+    if(provider){
+      console.log(provider)
+    }
+    //  mutationGetP.mutate(provider?.id);
+  },[provider])
 
   const inputProps = {
     onChange: (e) => setForm({ ...form, [e.name]: e.value }),
@@ -461,7 +469,7 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
             getOptionLabel={(option) => option.name}
             onSelect={(selection) => {
               setClient(selection);
-              selection && setProvider(null) && setProvidersAccounts([]);
+              selection && setProvider(null)// && setProvidersAccounts([]);
               selection && router.push("?clienteId=" + selection.id);
               !selection && router.push("?", { shallow: true });
             }}
@@ -479,10 +487,11 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
             value={provider}
             getOptionLabel={(option) => option.name}
             onSelect={(selection) => {
+              console.log(selection)
               setProvider(selection);
-              selection && setClient(null) && setSProviderAccountS([]);
-              selection && router.push("?proveedorId=" + selection.id);
-              !selection && router.push("?", { shallow: true });
+              selection && setClient(null) //&& setSProviderAccounts([]);
+              selection && router.push("?proveedorId=" + selection.id +"&cuentaProveedorId="+ providersAccounts);
+             !selection && router.push("?", { shallow: true });
             }}
           />
         </Col>
@@ -509,8 +518,8 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
             onSelect={(selection) => {
               console.log(selection);
               setProvidersAccounts(selection);
-              selection && setClient(null) && setProvider(null);
-              //selection && router.push('?cuentaProveedorId=' + selection);
+              selection && setClient(null) 
+              selection && router.push("?proveedorId=" + provider?.id +"&cuentaProveedorId="+ selection);
               !selection && router.push("?", { shallow: true });
             }}
           />
