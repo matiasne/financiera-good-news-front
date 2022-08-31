@@ -30,12 +30,15 @@ import { dataURLtoFile } from "@/adapters/Parsers";
 import { saveAs } from "file-saver";
 import Spinner from "@/components/base/Spinner";
 
+import {TransactionStatusTypes} from '../models/transactionStatus'
+
+
 const Page = ({ session }) => {
   const router = useRouter();
 
   const [sort, setSort] = useState("createdAt");
   const [order, setOrder] = useState("desc");
-
+  
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({});
   const [itemsAmount, setItemsAmount] = useState({});
@@ -243,6 +246,7 @@ export default Page;
 function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
   const [client, setClient] = useState(null);
   const [provider, setProvider] = useState(null);
+  const [status,setStatus] = useState([]);
   const [providersAccounts, setProvidersAccounts] = useState([]);
   const router = useRouter();
   const [form, setForm] = useState({
@@ -251,10 +255,13 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
   });
   const [internalFilters, setInternalFilters] = useState({});
   const [showItemsAmountAlert, setShowItemsAmountAlert] = useState(false);
-  const [showSpinnerTicketDownload, setShowSpinnerTicketDownload] =
-    useState(false);
+  const [showSpinnerTicketDownload, setShowSpinnerTicketDownload] =  useState(false);
 
   useEffect(() => {
+
+    
+    console.log(router.query)
+
     if (router.query?.clienteId > 0) {
       mutationGetC.mutate(router.query?.clienteId);
     } else {
@@ -265,9 +272,16 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
       mutationGetP.mutate(router.query?.proveedorId);
     } else {
       setProvider(null);
-
     }
-    setProvidersAccounts([]);
+
+    if (router.query?.cuentaProveedorId) {
+      setProvidersAccounts(router.query.cuentaProveedorId.split(",").map(i=>Number(i)))
+    }
+
+    if (router.query?.status) {
+      setStatus(router.query.status.split(","))
+    }
+    
   }, []);
 
   useEffect(() => {
@@ -278,15 +292,20 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
       providerAccountId: providersAccounts,
       from: forceTime(form?.from, true),
       to: forceTime(form?.to, false),
+      status:status
     });
     onFilter({
       personId: provider?.id || client?.id,
       from: forceTime(form?.from, true),
       to: forceTime(form?.to, false),
       providerAccountId: providersAccounts,
+      status:status
     });
     console.log(forceTime(form?.from, true));
-  }, [provider, client, providersAccounts, form]);
+
+   
+
+  }, [provider, client, providersAccounts, status,form]);
 
   const mutationGetC = useMutation(
     (id) => {
@@ -384,20 +403,17 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
       provider && setProvider(null);
     }
 
-    /*if (router.query?.cuentaProveedorId > 0) {
-      mutationGetPA.mutate(router.query?.cuentaProveedorId);
-    } else {
-      providersAccounts && setProvidersAccounts([]);
-    }*/
+    if (router.query?.cuentaProveedorId) {
+      setProvidersAccounts(router.query.cuentaProveedorId.split(",").map(i=>Number(i)))
+    }
+
+    if (router.query?.status) {
+      setStatus(router.query.status.split(","))
+    }
+
+   
   }, [router]);
 
-  useEffect(()=>{
-    console.log(provider)
-    if(provider){
-      console.log(provider)
-    }
-    //  mutationGetP.mutate(provider?.id);
-  },[provider])
 
   const inputProps = {
     onChange: (e) => setForm({ ...form, [e.name]: e.value }),
@@ -456,7 +472,7 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
             ) : null}
           </div>
         </Col>
-        <Col span={4}>
+        <Col span={3}>
           <QueryAutocomplete
             label="Cliente"
             id="clientSearch"
@@ -468,14 +484,22 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
             value={client}
             getOptionLabel={(option) => option.name}
             onSelect={(selection) => {
-              setClient(selection);
-              selection && setProvider(null)// && setProvidersAccounts([]);
-              selection && router.push("?clienteId=" + selection.id);
-              !selection && router.push("?", { shallow: true });
+              if(selection){
+
+                setClient(selection);
+                
+                let query = router.query;
+                query["clienteId"] = selection.id;
+                
+                delete query.proveedorId;
+                setProvider(null)                
+                router.push("?"+new URLSearchParams(query).toString());
+              }
+
             }}
           />
         </Col>
-        <Col span={4}>
+        <Col span={3}>
           <QueryAutocomplete
             label="Proveedor"
             id="providerSearch"
@@ -487,13 +511,71 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
             value={provider}
             getOptionLabel={(option) => option.name}
             onSelect={(selection) => {
-              console.log(selection)
-              setProvider(selection);
-              selection && setClient(null) //&& setSProviderAccounts([]);
-              selection && router.push("?proveedorId=" + selection.id +"&cuentaProveedorId="+ providersAccounts);
-             !selection && router.push("?", { shallow: true });
+              
+              
+              if(selection){
+                console.log(selection)
+                setProvider(selection);
+                let query = router.query;
+                query["proveedorId"] = selection.id;
+  
+                delete query.clienteId;
+                setClient(null);
+                
+                router.push("?"+new URLSearchParams(query).toString());
+              }
+             
             }}
           />
+        </Col>
+
+        <Col span={2}>
+
+
+
+        <Input type="multiselect" label="Status" name="statusFilter" id="statusFilter" placeholder="Escribe para buscar" value={status} 
+					options={[
+              {
+
+                label: 'Ingresado',
+                value: 'INGRESADO',
+              },
+              {
+                label: 'Confirmado',
+                value: 'CONFIRMADO',
+              },
+              {
+                label: 'Rechazado',
+                value: 'RECHAZADO',
+              },
+              {
+                label: 'Error de Carga',
+                value: 'ERROR_DE_CARGA',
+              },
+              {
+                label: 'CUIT Incorrecto',
+                value: 'CUIT_INCORRECTO',
+              },
+              {
+                label: 'Pendiente de Acreditación',
+                value: 'PENDIENTE_DE_ACREDITACION',
+              },
+            ]
+          }
+					onChange={(e) => {
+
+            if(e.value){
+              setStatus(e.value)
+              let query = router.query;
+              query["status"] = e.value;
+              router.push("?"+new URLSearchParams(query).toString());
+            }
+
+           
+
+					}}
+			  />
+          
         </Col>
       </Row>
       <Row>
@@ -507,20 +589,24 @@ function AdvancedFilters({ session, itemsAmount, onFilter = () => null }) {
               order: "asc",
             }}
             value={providersAccounts}
-            getOptionValue={(option) => option.id}
+            getOptionValue={(option) => option?.id}
             getOptionLabel={(option) =>
-              option.providerName +
+              option?.providerName +
               " - " +
-              option.name +
+              option?.name +
               " - #" +
-              option.accountNumber
+              option?.accountNumber
             }
             onSelect={(selection) => {
-              console.log(selection);
-              setProvidersAccounts(selection);
-              selection && setClient(null) 
-              selection && router.push("?proveedorId=" + provider?.id +"&cuentaProveedorId="+ selection);
-              !selection && router.push("?", { shallow: true });
+              if(selection){
+                setProvidersAccounts(selection);
+                setClient(null) 
+                let query = router.query;
+                query["cuentaProveedorId"] = selection;
+                delete query.clienteId;
+                router.push("?"+new URLSearchParams(query).toString());
+              }
+              
             }}
           />
         </Col>

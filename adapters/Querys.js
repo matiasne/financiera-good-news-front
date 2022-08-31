@@ -200,6 +200,8 @@ function getQueryData(id = '') {
 	return id && myQueries[id] ? myQueries[id] : {}
 }
 
+
+
 export function getQueryFullData(id = '', queryData, session = null) {
 	const fetchBase = getQueryData(id);
 	return {
